@@ -27,6 +27,19 @@
   - Tab 🖼️ **Tải ảnh lên:** Kéo thả ảnh (Drag & Drop), thanh trượt điều chỉnh Confidence (10% - 95%), danh sách thẻ thiết bị phát hiện được.
   - Kho ảnh mẫu (Sample Images) từ tập Test để thử nghiệm với 1 cú click.
 - [x] **Khởi chạy máy chủ Web thành công:** Sẵn sàng tại `http://localhost:8000`.
+- [x] **Đóng gói & Triển khai Cloud (Render.com / Docker):**
+  - Tạo `Dockerfile`, `render.yaml`, `requirements.txt`, đẩy repo lên GitHub `Quan-129/Gym_AI_Project`.
+  - Khắc phục lỗi `Out of memory (>512Mi)` bằng cách dùng PyTorch CPU-only và giới hạn luồng `OMP_NUM_THREADS=1`.
+  - Xuất thành công định dạng **ONNX** (`weights/best.onnx` - 42.8 MB) để tăng tốc độ suy luận.
+
+---
+
+### 🐞 Vấn đề kỹ thuật & Giải pháp (Bug Tracking & Root Cause Analysis)
+
+| # | Vấn đề / Thông báo lỗi | Nguyên nhân gốc rễ | Giải pháp áp dụng | Trạng thái |
+| :-: | :--- | :--- | :--- | :---: |
+| 1 | `[Errno 10048] address already in use: 8000` | Cổng 8000 bị chiếm do tiến trình máy chủ trước đó chưa tắt hoàn toàn. | Giải phóng cổng 8000, sửa cú pháp `TemplateResponse` cho Starlette mới. | ✅ Đã giải quyết |
+| 2 | `Out of memory (used over 512Mi)` trên Render Free | `pip install torch` mặc định tải bản CUDA nặng 4GB vượt 512MB RAM. | Đổi Dockerfile sang PyTorch CPU-only (~150MB) + giới hạn luồng `torch.set_num_threads(1)`. | ✅ Đã giải quyết |
 
 ---
 
