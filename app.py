@@ -1,4 +1,7 @@
 import os
+# Ensure writable Ultralytics config dir in containers
+os.environ.setdefault("YOLO_CONFIG_DIR", "/tmp/Ultralytics")
+
 import io
 import time
 import base64
@@ -69,15 +72,19 @@ if not MODEL_PATH:
 DEVICE = 0 if torch.cuda.is_available() else "cpu"
 GPU_NAME = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
 
+if DEVICE == "cpu":
+    # Limit PyTorch CPU threads to prevent memory explosion on 512MB RAM
+    torch.set_num_threads(1)
+
 print(f"🚀 [Gym AI] Loading model: {MODEL_PATH}")
 print(f"⚡ [Gym AI] Device: {DEVICE} ({GPU_NAME})")
 
 try:
     model = YOLO(MODEL_PATH)
-    # Warmup inference
-    dummy = np.zeros((640, 640, 3), dtype=np.uint8)
-    model.predict(dummy, device=DEVICE, verbose=False)
-    print("✅ [Gym AI] Model loaded & warmed up successfully!")
+    print("✅ [Gym AI] Model loaded successfully!")
+except Exception as e:
+    print(f"⚠️ [Gym AI] Error loading model {MODEL_PATH}: {e}")
+    model = None
 except Exception as e:
     print(f"⚠️ [Gym AI] Error loading model {MODEL_PATH}: {e}")
     model = None
