@@ -1,23 +1,31 @@
 # 🏋️‍♂️ Gym AI Project - Intelligent Gym Equipment & Workout Assistant
 
-[![Python Version](https://img.shields.io/badge/Python-3.11.9-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1%2Bcu121-red.svg)](https://pytorch.org/)
-[![Ultralytics YOLOv8](https://img.shields.io/badge/YOLOv8-8.4.130-brightgreen.svg)](https://github.com/ultralytics/ultralytics)
-[![Hardware](https://img.shields.io/badge/GPU-RTX%204050%206GB-76B900.svg)](https://www.nvidia.com/)
-[![License](https://img.shields.io/badge/Dataset-Roboflow%20CC%20BY%204.0-orange.svg)](https://universe.roboflow.com/akash-edwin-samuel/gym-dataset-zfznf/dataset/2)
+[![Live Demo](https://img.shields.io/badge/Render-Live%20Demo-46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)](https://gym-ai-project-44yz.onrender.com/)
+[![Python Version](https://img.shields.io/badge/Python-3.11.9-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.5.1%2Bcu121-EE4C2C.svg?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Ultralytics YOLOv8](https://img.shields.io/badge/YOLOv8-8.4.130-00FFFF.svg?style=for-the-badge)](https://github.com/ultralytics/ultralytics)
+[![Hardware](https://img.shields.io/badge/GPU-RTX%204050%206GB-76B900.svg?style=for-the-badge&logo=nvidia&logoColor=white)](https://www.nvidia.com/)
+[![License](https://img.shields.io/badge/Dataset-Roboflow%20CC%20BY%204.0-FF6F00.svg?style=for-the-badge)](https://universe.roboflow.com/akash-edwin-samuel/gym-dataset-zfznf/dataset/2)
 
-> **Gym AI** là dự án thị giác máy tính thông minh (Computer Vision AI) hỗ trợ nhận diện **69 loại thiết bị và dụng cụ phòng gym**, xây dựng nền tảng cho việc tự động phân tích tư thế tập luyện (Pose Estimation), đếm số lần tập (Rep Counting) và đánh giá kỹ thuật động tác.
+> **Gym AI** là dự án thị giác máy tính thông minh (Computer Vision AI) hỗ trợ nhận diện **69 loại thiết bị và dụng cụ phòng gym** theo thời gian thực. Dự án tích hợp Web App tương tác trực quan qua Camera & Tải ảnh, đồng thời xây dựng nền tảng cho việc tự động phân tích tư thế tập luyện (Pose Estimation) và đếm số lần tập (Rep Counting).
+
+🌐 **Trải nghiệm trực tiếp trên Web:** **[https://gym-ai-project-44yz.onrender.com/](https://gym-ai-project-44yz.onrender.com/)**
 
 ---
 
 ## 📌 Tính năng chính (Key Features)
 
-- [x] **Nhận diện 69 lớp thiết bị Gym:** Nhận diện nhanh và chính xác các loại máy tập, tạ đơn, tạ đòn, máy kéo cáp, máy chạy bộ,...
-- [x] **Tối ưu hóa phần cứng NVIDIA GPU:** Tận dụng tối đa sức mạnh của NVIDIA GeForce RTX 4050 (6GB VRAM) với CUDA 12.1 và FP16 / AMP.
-- [x] **Tự động hóa xử lý dữ liệu:** Quản lý dữ liệu thông minh, tự động giải nén và xử lý an toàn trên Windows.
-- [ ] **Phân tích tư thế tập luyện (Pose Estimation):** Theo dõi 33 điểm mốc cơ thể để kiểm tra form tập đúng/sai.
-- [ ] **Tự động đếm lần lặp (Rep Counter):** Đếm số rep của bài Squat, Bench Press, Bicep Curl theo quỹ đạo khớp.
-- [ ] **Giao diện thời gian thực:** Kết nối trực tiếp Webcam / Camera giám sát phòng gym.
+- [x] **Nhận diện 69 lớp thiết bị Gym:** Nhận diện chính xác máy tập, tạ đơn, tạ đòn, máy kéo cáp, máy chạy bộ, xe đạp tập,... (**mAP50 đạt 82.8%**).
+- [x] **Web App Responsive Hiện đại:** 
+  - 📷 **Live Camera Stream:** Nhận diện thời gian thực qua webcam laptop/điện thoại, đo FPS và độ trễ AI (Latency ms).
+  - 🖼️ **Image Drag & Drop:** Kéo thả tải ảnh lên để test, tích hợp kho ảnh mẫu (Sample Images) test nhanh với 1 click.
+  - 🎛️ **Điều khiển linh hoạt:** Tùy chỉnh thanh trượt Confidence Threshold (10% - 95%) và IoU NMS.
+- [x] **Hỗ trợ đa định dạng mô hình:** Cung cấp cả trọng số **PyTorch** (`weights/best.pt`) và **ONNX** (`weights/best.onnx`).
+- [x] **Tối ưu hóa đa nền tảng:**
+  - 🚀 **Local GPU:** Tận dụng NVIDIA GeForce RTX 4050 (6GB VRAM) với CUDA 12.1 (độ trễ ~15 - 25ms).
+  - ☁️ **Cloud Deployment:** Đóng gói Docker siêu nhẹ, tối ưu RAM để chạy mượt mà trên Render / Hugging Face Spaces.
+- [ ] **Phân tích tư thế tập luyện (Pose Estimation):** Theo dõi 33 điểm mốc cơ thể bằng MediaPipe / YOLO-Pose.
+- [ ] **Tự động đếm lần lặp (Rep Counter):** Đếm số rep của bài Squat, Bench Press, Bicep Curl theo góc khớp.
 
 ---
 
@@ -25,27 +33,26 @@
 
 | Thành phần | Yêu cầu khuyến nghị |
 | :--- | :--- |
-| **Hệ điều hành** | Windows 10 / Windows 11 (64-bit) |
-| **Python** | `Python 3.11.9` (Khuyến nghị chuẩn cho AI, PyTorch & MediaPipe) |
-| **GPU** | NVIDIA GeForce RTX 4050 Laptop GPU (6GB VRAM) hoặc tương đương |
+| **Hệ điều hành** | Windows 10 / Windows 11 (64-bit) hoặc Linux |
+| **Python** | `Python 3.11.x` (Khuyến nghị chuẩn cho AI, PyTorch & MediaPipe) |
+| **GPU** | NVIDIA GeForce RTX 4050 (6GB VRAM) hoặc tương đương (Hỗ trợ cả chế độ CPU) |
 | **Driver / CUDA** | NVIDIA Driver 556.12+, CUDA Version 12.1 / 12.5 |
-| **RAM** | Tối thiểu 16GB RAM |
-| **Dung lượng ổ đĩa** | Trống tối thiểu 10GB cho Dataset & Checkpoints |
+| **RAM** | Tối thiểu 8GB RAM (khi chạy local) / 512MB RAM (khi chạy Docker CPU) |
 
 ---
 
 ## 📦 Thông tin Dataset (Gym Dataset v2)
 
-Dataset được xuất bản trên Roboflow Universe bao gồm hơn **45.300+ ảnh** với **69 nhãn thiết bị gym**:
+Dataset được thu thập và tiền xử lý từ Roboflow Universe bao gồm hơn **45.375 ảnh** với **69 nhãn thiết bị gym**:
 
 - **Tập Train:** ~18.089 ảnh
 - **Tập Validation:** ~2.260 ảnh
 - **Tập Test:** ~1.100 ảnh
-- **Danh sách nhãn tiêu biểu:** *Dumbbell, Barbell, Treadmill, Bench, Cable Machine, Lat Pull Down, Leg Press, Smith Machine, Squat Rack, Kettlebell, Stationary Bike, Elliptical,...*
+- **Danh sách nhãn tiêu biểu:** *Ab Crunch Machine, Arm Curl Machine, Barbell, Bench, Cable Machine, Chest Machine, Dumbbell, Elliptical, Functional Trainer, Kettlebell, Lat Pull Down Machine, Leg Extension Machine, Leg Press Machine, Pull Up Bar, Resistance Bands, Smith Machine, Squat Rack, Treadmill,...*
 
 ---
 
-## ⚙️ Cài đặt môi trường (Setup Guide)
+## ⚙️ Cài đặt & Khởi chạy Local
 
 ### 1. Khởi tạo môi trường ảo (Virtual Environment)
 ```powershell
@@ -61,78 +68,73 @@ py -3.11 -m venv venv
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### 3. Cài đặt Ultralytics & các thư viện bổ trợ
+### 3. Cài đặt các thư viện cần thiết
 ```powershell
-pip install ultralytics roboflow "numpy<2.4,>=1.24" "opencv-python==4.10.0.84"
+pip install -r requirements.txt
 ```
 
-### 4. Kiểm tra GPU nhận diện
+### 4. Khởi chạy Web App cục bộ
 ```powershell
-python -c "import torch; print('CUDA Available:', torch.cuda.is_available()); print('Device:', torch.cuda.get_device_name(0))"
+python app.py
 ```
+👉 Mở trình duyệt và truy cập: **`http://localhost:8000`**
 
 ---
 
 ## 🚀 Huấn luyện mô hình (Training)
 
-Chạy file kịch bản huấn luyện:
+Để huấn luyện lại mô hình YOLOv8s từ đầu:
 ```powershell
 python train.py
 ```
 
-### Cấu hình huấn luyện trong `train.py`:
+### Cấu hình huấn luyện tối ưu trong `train.py`:
 ```python
 results = model.train(
     data="Gym-Dataset-2/data.yaml",
     epochs=30,          # 30 chu kỳ huấn luyện
     imgsz=640,          # Kích thước ảnh đầu vào tiêu chuẩn
-    batch=8,            # Tối ưu cho 6GB VRAM (không bị tràn bộ nhớ)
+    batch=8,            # Tối ưu cho 6GB VRAM
     device=0,           # ID GPU RTX 4050
-    workers=2,          # Đa luồng nạp dữ liệu ổn định trên Windows
-    project="GymAI_App",# Thư mục lưu kết quả
-    name="run_01"       # Tên phiên huấn luyện
+    workers=2,          # Nạp dữ liệu ổn định trên Windows
+    project="GymAI_App",# Thư mục lưu checkpoint
+    name="run_01"
 )
 ```
 
 ---
 
-## 🔮 Dự đoán & Kiểm thử (Inference)
+## 📊 Kết quả huấn luyện (Final Benchmarks - 30 Epochs)
 
-Sau khi hoàn tất quá trình huấn luyện, trọng số tốt nhất được lưu tại `runs/detect/GymAI_App/run_01/weights/best.pt`.
+*Mô hình **YOLOv8s** sau 30 chu kỳ huấn luyện trên 69 lớp thiết bị Gym:*
 
-### Code Python dự đoán trên ảnh hoặc Webcam:
-```python
-from ultralytics import YOLO
-import cv2
-
-# Nạp mô hình đã train
-model = YOLO('runs/detect/GymAI_App/run_01-2/weights/best.pt')
-
-# Dự đoán từ Webcam (source=0) hoặc video
-results = model.predict(source=0, show=True, conf=0.5)
-```
+| Chỉ số (Metric) | Kết quả đạt được | Đánh giá |
+| :--- | :---: | :--- |
+| **mAP@0.5** | **82.78%** | Nhận diện rất nhạy và chính xác cao |
+| **mAP@0.5:0.95** | **65.26%** | Độ khớp Bounding Box chuẩn xác |
+| **Precision** | **80.13%** | Ít dương tính giả (false positive) |
+| **Recall** | **76.28%** | Bắt trọn hầu hết các thiết bị trong khung hình |
+| **Tốc độ Inference (GPU)** | **~15 - 25 ms** | Đạt chuẩn 40 - 60 FPS thời gian thực |
+| **Dung lượng Model** | **22.5 MB** (`best.pt`) | Nhẹ, dễ dàng đóng gói và deploy |
 
 ---
 
-## 📊 Kết quả huấn luyện gần nhất (Benchmarks)
+## ☁️ Triển khai Cloud (Deployment)
 
-*Tiến trình huấn luyện mô hình **YOLOv8s** trên tập dữ liệu 69 lớp:*
+Dự án đã sẵn sàng cho Docker và các nền tảng Cloud:
 
-| Epoch | GPU Memory | Box Loss | Class Loss | Precision (B) | Recall (B) | mAP50 (B) | mAP50-95 (B) |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | ~2.0 GB | 1.058 | 3.248 | 0.549 | 0.226 | 0.222 | 0.146 |
-| 3 | ~2.0 GB | 0.874 | 1.782 | 0.583 | 0.351 | 0.395 | 0.275 |
-| 5 | ~2.0 GB | 0.806 | 1.460 | 0.634 | 0.480 | 0.525 | 0.375 |
-| 7 | ~2.0 GB | 0.768 | 1.259 | 0.611 | 0.549 | 0.573 | 0.419 |
-| 8 | ~2.0 GB | 0.741 | 1.194 | 0.655 | 0.588 | **0.594** | **0.436** |
+- **Render / Railway:** Đã cấu hình sẵn `render.yaml`, `Dockerfile` (PyTorch CPU-only siêu nhẹ).
+- **Hugging Face Spaces:** Hỗ trợ Docker runtime mặc định (cổng 7860/10000).
+- **Live URL:** **[https://gym-ai-project-44yz.onrender.com/](https://gym-ai-project-44yz.onrender.com/)**
 
 ---
 
 ## 🗺️ Lộ trình phát triển (Roadmap)
 
 - [x] Thu thập & tiền xử lý dataset 69 thiết bị Gym từ Roboflow.
-- [x] Huấn luyện baseline model YOLOv8s với GPU RTX 4050.
-- [ ] Hoàn tất 30 epochs & xuất file mô hình ONNX / TensorRT để tăng tốc độ suy luận.
+- [x] Huấn luyện hoàn tất 30 epochs YOLOv8s với GPU RTX 4050 (**mAP50 82.8%**).
+- [x] Xuất mô hình ONNX (`weights/best.onnx`).
+- [x] Xây dựng Web App Responsive kiểm thử Camera & Upload ảnh.
+- [x] Deploy ứng dụng lên Render với chứng chỉ HTTPS.
 - [ ] Tích hợp MediaPipe Pose để đo góc khớp tay, chân, lưng trong các bài tập phổ biến.
-- [ ] Xây dựng logic đếm Reps và cảnh báo sai tư thế.
-- [ ] Xây dựng Web App demo tương tác trực quan.
+- [ ] Xây dựng logic đếm Reps và cảnh báo sai tư thế bài tập.
