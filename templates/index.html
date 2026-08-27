@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gym AI - Nhận diện Thiết bị & Dụng cụ Tập Gym</title>
+    <meta name="description" content="Hệ thống AI nhận diện 69 loại thiết bị phòng gym và dụng cụ thể hình theo thời gian thực trên GPU RTX 4050.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+
+    <!-- Glowing Background Gradients -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>GYM <span>AI</span> VISION</h1>
+                    <p class="tagline">69 Equipment Real-time Detector</p>
+                </div>
+            </div>
+
+            <!-- Hardware & Model Info Badges -->
+            <div class="header-badges">
+                <div class="badge badge-gpu" id="gpuBadge">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>{{ gpu_name }}</span>
+                    {% if is_cuda %}
+                        <span class="badge-dot dot-green" title="CUDA Khả dụng"></span>
+                    {% else %}
+                        <span class="badge-dot dot-yellow" title="CPU Mode"></span>
+                    {% endif %}
+                </div>
+                <div class="badge badge-model">
+                    <i class="fa-solid fa-brain"></i>
+                    <span id="modelNameDisplay">{{ model_name }}</span>
+                    <span class="badge-pill">mAP50 82.8%</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content container">
+        
+        <!-- Tab Mode Navigation -->
+        <div class="mode-tabs">
+            <button class="tab-btn active" id="tabWebcamBtn" onclick="switchTab('webcam')">
+                <i class="fa-solid fa-video"></i>
+                <span>Camera Trực Tiếp</span>
+                <span class="live-pill"><span class="pulse-dot"></span> LIVE</span>
+            </button>
+            <button class="tab-btn" id="tabUploadBtn" onclick="switchTab('upload')">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Tải Ảnh Lên</span>
+            </button>
+        </div>
+
+        <div class="workspace-grid">
+            
+            <!-- Left Column: Visual Viewport -->
+            <section class="viewport-card">
+                
+                <!-- CAMERA VIEW TAB -->
+                <div id="webcamView" class="tab-view active">
+                    <div class="viewfinder-wrapper" id="viewfinderWrapper">
+                        <video id="webcamElement" autoplay playsinline muted></video>
+                        <canvas id="detectionCanvas"></canvas>
+                        
+                        <!-- Overlay Standby Placeholder -->
+                        <div id="cameraStandby" class="viewport-placeholder">
+                            <div class="placeholder-icon">
+                                <i class="fa-solid fa-camera-retro"></i>
+                            </div>
+                            <h3>Camera Chưa Được Bật</h3>
+                            <p>Nhấn nút bên dưới để cấp quyền camera và bắt đầu nhận diện thời gian thực</p>
+                            <button class="btn btn-primary btn-lg" id="startCamBtn" onclick="startWebcam()">
+                                <i class="fa-solid fa-play"></i> Bật Camera
+                            </button>
+                        </div>
+
+                        <!-- Live Stats Floating Pill -->
+                        <div class="floating-hud" id="floatingHud" style="display: none;">
+                            <div class="hud-item">
+                                <span class="hud-label">FPS</span>
+                                <span class="hud-val" id="hudFps">0</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">LATENCY</span>
+                                <span class="hud-val" id="hudLatency">0ms</span>
+                            </div>
+                            <div class="hud-item highlight">
+                                <span class="hud-label">DETECTED</span>
+                                <span class="hud-val" id="hudCount">0</span>
+                            </div>
+                        </div>
+
+                        <!-- Scanner Animation Line -->
+                        <div class="scanner-bar" id="scannerBar" style="display: none;"></div>
+                    </div>
+
+                    <!-- Webcam Action Toolbar -->
+                    <div class="toolbar" id="webcamToolbar">
+                        <button class="btn btn-primary" id="toggleCamBtn" onclick="toggleWebcam()">
+                            <i class="fa-solid fa-power-off"></i> <span id="toggleCamText">Bật Camera</span>
+                        </button>
+                        <button class="btn btn-secondary" id="flipCamBtn" onclick="flipCamera()">
+                            <i class="fa-solid fa-camera-rotate"></i> <span>Đổi Camera</span>
+                        </button>
+                        <button class="btn btn-secondary" id="snapshotBtn" onclick="takeSnapshot()">
+                            <i class="fa-solid fa-camera"></i> <span>Chụp Frame</span>
+                        </button>
+                        <div class="toolbar-status">
+                            <span class="status-indicator" id="camStatusDot"></span>
+                            <span id="camStatusText">Sẵn sàng</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPLOAD IMAGE TAB -->
+                <div id="uploadView" class="tab-view">
+                    
+                    <!-- Drag & Drop Zone -->
+                    <div class="dropzone" id="dropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                        <div class="dropzone-content" id="dropzoneContent">
+                            <div class="dropzone-icon">
+                                <i class="fa-solid fa-images"></i>
+                            </div>
+                            <h3>Kéo & thả ảnh vào đây hoặc bấm để chọn</h3>
+                            <p>Hỗ trợ JPG, PNG, WEBP dung lượng tối đa 20MB</p>
+                            <span class="btn btn-outline btn-sm">Chọn file từ máy</span>
+                        </div>
+                    </div>
+
+                    <!-- Image Result Canvas Area -->
+                    <div class="image-result-wrapper" id="imageResultWrapper" style="display: none;">
+                        <div class="result-img-container">
+                            <img id="resultImage" alt="Gym Equipment Detection Result">
+                        </div>
+                        <div class="img-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="clearUpload()">
+                                <i class="fa-solid fa-rotate-left"></i> Thử ảnh khác
+                            </button>
+                            <a id="downloadBtn" class="btn btn-primary btn-sm" download="gym_detection.jpg">
+                                <i class="fa-solid fa-download"></i> Tải ảnh kết quả
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Sample Gym Images -->
+                    <div class="sample-images-section">
+                        <div class="sample-header">
+                            <h4><i class="fa-solid fa-bolt"></i> Thử nhanh với ảnh mẫu có sẵn trong Dataset:</h4>
+                            <span class="sample-hint">(Click vào ảnh để test ngay)</span>
+                        </div>
+                        <div class="sample-grid" id="sampleGrid">
+                            <!-- Populated dynamically via JS -->
+                            <div class="sample-skeleton"></div>
+                            <div class="sample-skeleton"></div>
+                            <div class="sample-skeleton"></div>
+                            <div class="sample-skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Right Column: Controls & Detections List -->
+            <aside class="sidebar-card">
+                
+                <!-- Controls Box -->
+                <div class="card-section">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-sliders"></i> Cấu hình nhận diện
+                    </h3>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Độ tự tin (Confidence)</span>
+                            <span class="control-value" id="confValue">25%</span>
+                        </div>
+                        <input type="range" id="confSlider" min="0.10" max="0.95" step="0.05" value="0.25" oninput="updateConfidence(this.value)">
+                        <div class="slider-ticks">
+                            <span>10% (Nhạy)</span>
+                            <span>50%</span>
+                            <span>95% (Chính xác)</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Ngưỡng trùng lặp (IoU NMS)</span>
+                            <span class="control-value" id="iouValue">45%</span>
+                        </div>
+                        <input type="range" id="iouSlider" min="0.20" max="0.80" step="0.05" value="0.45" oninput="updateIoU(this.value)">
+                    </div>
+                </div>
+
+                <!-- Realtime Performance Stats -->
+                <div class="card-section">
+                    <h3 class="section-title">
+                        <i class="fa-solid fa-chart-simple"></i> Hiệu năng suy luận
+                    </h3>
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <span class="stat-label">Độ trễ AI</span>
+                            <span class="stat-value" id="statLatency">0 <small>ms</small></span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Số thiết bị</span>
+                            <span class="stat-value text-accent" id="statCount">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-label">Tốc độ</span>
+                            <span class="stat-value" id="statFps">0 <small>FPS</small></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detected Equipment List -->
+                <div class="card-section fill-section">
+                    <div class="section-title-row">
+                        <h3 class="section-title">
+                            <i class="fa-solid fa-list-check"></i> Thiết bị phát hiện
+                        </h3>
+                        <span class="badge-count" id="detectionBadgeCount">0 mục</span>
+                    </div>
+
+                    <div class="detections-container" id="detectionsList">
+                        <div class="empty-detections">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <p>Chưa có thiết bị nào được phát hiện</p>
+                            <small>Đưa dụng cụ tập vào camera hoặc tải ảnh lên để bắt đầu</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Quick Info -->
+                <div class="card-footer-info">
+                    <span><i class="fa-solid fa-circle-info"></i> Mô hình hỗ trợ 69 loại thiết bị & máy gym</span>
+                </div>
+
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- Floating Toast Message Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Main JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

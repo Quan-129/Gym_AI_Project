@@ -1,0 +1,27 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Large Datasets & Training checkpoints
+Gym-Dataset-2/
+runs/
+*.zip
+
+# Base models (only track our trained model weights)
+yolov8s.pt
+weights/yolo26n.pt
+
+# Track our trained model
+!weights/best.pt
+
+# IDE & Configs
+.vscode/
+.idea/
+.agents/

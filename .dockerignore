@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.agents/
+.vscode/
+Gym-Dataset-2/
+runs/
+*.zip
+*.log
