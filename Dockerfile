@@ -18,12 +18,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 3. Copy source code and weights
 COPY . .
 
-# Environment variables to optimize memory for 512MB RAM
+# Environment variables to optimize memory and enforce UTF-8 for Vietnamese characters
 ENV PORT=10000
 ENV OMP_NUM_THREADS=1
 ENV MKL_NUM_THREADS=1
 ENV YOLO_CONFIG_DIR=/tmp/Ultralytics
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONIOENCODING=utf-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
 EXPOSE 10000
 

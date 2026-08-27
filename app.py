@@ -1,6 +1,15 @@
 import os
+import sys
+
+# Force UTF-8 encoding for standard streams
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 # Ensure writable Ultralytics config dir in containers
 os.environ.setdefault("YOLO_CONFIG_DIR", "/tmp/Ultralytics")
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
 import io
 import time
