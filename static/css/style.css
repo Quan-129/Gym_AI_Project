@@ -1536,91 +1536,101 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .equipment-grid {
     padding: 20px 24px;
     overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 14px;
-    max-height: 55vh;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    grid-auto-rows: minmax(100px, auto) !important;
+    gap: 16px !important;
+    max-height: 58vh;
+    align-content: start;
 }
 
 /* Equipment Card */
 .equipment-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 14px;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-    overflow: hidden;
+    background: rgba(22, 29, 44, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 14px !important;
+    align-items: flex-start !important;
+    min-height: 100px !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative !important;
+    overflow: visible !important;
 }
 
 .equipment-card:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(0, 242, 254, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 242, 254, 0.1);
+    background: rgba(30, 41, 59, 0.95) !important;
+    border-color: rgba(0, 242, 254, 0.5) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 242, 254, 0.15) !important;
 }
 
 .equipment-icon-box {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(0, 242, 254, 0.08);
-    border: 1px solid rgba(0, 242, 254, 0.2);
-    color: #00f2fe;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.05rem;
-    flex-shrink: 0;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    background: rgba(0, 242, 254, 0.1) !important;
+    border: 1px solid rgba(0, 242, 254, 0.25) !important;
+    color: #00f2fe !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.15rem !important;
+    flex-shrink: 0 !important;
 }
 
 .equipment-meta {
-    flex: 1;
-    min-width: 0;
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
 }
 
 .equipment-meta .card-top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 2px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 2px !important;
 }
 
 .equipment-meta .eng-name {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #f8fafc;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    color: #f8fafc !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .equipment-meta .cat-badge {
-    font-size: 0.65rem;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #94a3b8;
-    flex-shrink: 0;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    padding: 2px 8px !important;
+    border-radius: 6px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+    flex-shrink: 0 !important;
 }
 
 .equipment-meta .vi-name {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #38bdf8;
-    margin: 2px 0 4px;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #38bdf8 !important;
+    margin: 2px 0 3px !important;
+    line-height: 1.3 !important;
 }
 
 .equipment-meta .desc-text {
-    font-size: 0.72rem;
-    color: #64748b;
-    line-height: 1.35;
-    margin: 0;
+    font-size: 0.75rem !important;
+    color: #94a3b8 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
 }
 
 /* Empty search state */
@@ -1658,7 +1668,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
     
     .equipment-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
         max-height: 50vh;
     }
     
@@ -1669,4 +1679,5 @@ input[type="range"]::-webkit-slider-thumb:hover {
         text-align: center;
     }
 }
+
 
