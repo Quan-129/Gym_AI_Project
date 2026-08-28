@@ -30,15 +30,20 @@ license: mit
 ## 📌 Tính năng chính (Key Features)
 
 - [x] **Nhận diện 69 lớp thiết bị Gym:** Nhận diện chính xác máy tập, tạ đơn, tạ đòn, máy kéo cáp, máy chạy bộ, xe đạp tập,... (**mAP50 đạt 82.8%**).
-- [x] **Web App Responsive Hiện đại:** 
-  - 📷 **Live Camera Stream:** Nhận diện thời gian thực qua webcam laptop/điện thoại, đo FPS và độ trễ AI (Latency ms).
-  - 🖼️ **Image Drag & Drop:** Kéo thả tải ảnh lên để test, tích hợp kho ảnh mẫu (Sample Images) test nhanh với 1 click.
+- [x] **Web App Responsive & Thẩm mỹ Cyberpunk Hiện đại:** 
+  - 📷 **Live Camera 60 FPS Siêu Mượt:** Động cơ camera tách luồng độc lập, tối ưu hóa cho điện thoại iOS/Android và máy tính, đo FPS và Latency thời gian thực.
+  - 🎬 **Video Hoạt Hình Hướng Dẫn Máy Tập (`machine-animation`):** Tự động phát video mô phỏng động tác chuyển động của máy khi AI nhận diện hoặc khi tra cứu.
+  - 🔍 **Bảng Tra Cứu 69 Thiết Bị Gym Thông Minh:** Tìm kiếm đa ngữ thời gian thực theo tên Tiếng Anh, tên Tiếng Việt và nhóm cơ tác động, kèm 7 bộ lọc danh mục.
+  - 🖼️ **Image Drag & Drop:** Kéo thả tải ảnh lên để phân tích, tích hợp kho ảnh mẫu (Sample Images) thử nghiệm 1 cú click.
   - 🎛️ **Điều khiển linh hoạt:** Tùy chỉnh thanh trượt Confidence Threshold (10% - 95%) và IoU NMS.
-  - 📊 **Thanh tiến trình & Radar Scanner:** Hiển thị tiến trình nạp ảnh và radar quét thiết bị theo phong cách Cyberpunk.
+  - 📊 **Thanh tiến trình & Radar Scanner:** Hiển thị tiến trình xử lý AI và radar quét thiết bị chuyên nghiệp.
 - [x] **Hỗ trợ đa định dạng mô hình:** Cung cấp cả trọng số **PyTorch** (`weights/best.pt`), **ONNX** (`weights/best.onnx`), và giao diện **Gradio** (`app_gradio.py`).
 - [x] **Tối ưu hóa đa nền tảng:**
   - 🚀 **Local GPU:** Tận dụng NVIDIA GeForce RTX 4050 (6GB VRAM) với CUDA 12.1 (độ trễ ~15 - 25ms).
   - ☁️ **Cloud Deployment:** Triển khai độc lập 24/7 trên **Railway Cloud** (suy luận siêu tốc **~215ms**).
+- [x] **Hệ Thống Custom Skills Tự Động Hóa:**
+  - 🧠 `/update-context`: Tự động nạp và khôi phục 100% ngữ cảnh lịch sử dự án khi reload cửa sổ hoặc mở phiên mới.
+  - 📝 `/update-readme` & 📜 `/update-worklog`: Tự động đồng bộ tài liệu dự án và nhật ký phát triển.
 - [ ] **Phân tích tư thế tập luyện (Pose Estimation):** Theo dõi 33 điểm mốc cơ thể bằng MediaPipe / YOLO-Pose.
 - [ ] **Tự động đếm lần lặp (Rep Counter):** Đếm số rep của bài Squat, Bench Press, Bicep Curl theo góc khớp.
 
