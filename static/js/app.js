@@ -434,6 +434,17 @@ async function runImageInference(fileOrBlob) {
             body: formData
         });
 
+        if (!response.ok) {
+            let errorMsg = `Máy chủ phản hồi mã ${response.status}. Vui lòng thử lại sau giây lát!`;
+            try {
+                const errData = await response.json();
+                if (errData && errData.error) errorMsg = errData.error;
+            } catch (e) {
+                // Non-JSON (e.g. 502 Bad Gateway while restarting)
+            }
+            throw new Error(errorMsg);
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -453,7 +464,7 @@ async function runImageInference(fileOrBlob) {
     } catch (err) {
         console.error("Image inference error:", err);
         hideAiLoadingAnimation();
-        showToast("Lỗi kết nối máy chủ nhận diện!", "error");
+        showToast(err.message || "Lỗi kết nối máy chủ nhận diện!", "error");
     }
 }
 
