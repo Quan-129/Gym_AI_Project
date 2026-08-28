@@ -970,26 +970,25 @@ function renderEquipmentGrid(items) {
         const safeName = (item.name || '').replace(/'/g, "\\'");
 
         html += `
-            <div class="equipment-card" onclick="openEquipmentVideo('${safeName}')" title="Nhấn để xem hướng dẫn chi tiết & hoạt hình">
+            <div class="equipment-card ${hasVideo ? 'has-video' : ''}" onclick="openEquipmentVideo('${safeName}')" title="Nhấn để xem hướng dẫn chi tiết & hoạt hình">
                 <div class="equipment-icon-box">
                     <i class="fa-solid ${item.icon}"></i>
+                    ${hasVideo ? `<span class="icon-play-badge"><i class="fa-solid fa-play"></i></span>` : ''}
                 </div>
                 <div class="equipment-meta">
                     <div class="card-top-row">
                         <span class="eng-name" title="${item.name}">${item.name}</span>
-                        <span class="cat-badge">${item.catName}</span>
+                        <div class="badge-group">
+                            ${hasVideo ? `
+                                <button class="card-play-btn" onclick="event.stopPropagation(); openEquipmentVideo('${safeName}')" title="Xem video hoạt hình">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                            ` : ''}
+                            <span class="cat-badge">${item.catName}</span>
+                        </div>
                     </div>
                     <div class="vi-name">${item.viName}</div>
                     <p class="desc-text">${item.desc}</p>
-                    ${hasVideo ? `
-                        <div class="video-play-tag">
-                            <i class="fa-solid fa-circle-play"></i> Xem video hoạt hình
-                        </div>
-                    ` : `
-                        <div class="video-play-tag" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: #94a3b8;">
-                            <i class="fa-solid fa-circle-info"></i> Xem hướng dẫn
-                        </div>
-                    `}
                 </div>
             </div>
         `;

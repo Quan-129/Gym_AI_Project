@@ -1539,7 +1539,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
     overflow-y: auto;
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-    grid-auto-rows: minmax(100px, auto) !important;
     gap: 16px !important;
     max-height: 58vh;
     align-content: start;
@@ -1548,19 +1547,19 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* Equipment Card */
 .equipment-card {
     background: rgba(22, 29, 44, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 14px !important;
     padding: 14px 16px !important;
     display: flex !important;
     flex-direction: row !important;
     gap: 14px !important;
     align-items: flex-start !important;
-    min-height: 100px !important;
+    min-height: 105px !important;
     height: auto !important;
     box-sizing: border-box !important;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
     position: relative !important;
-    overflow: visible !important;
+    cursor: pointer;
 }
 
 .equipment-card:hover {
@@ -1570,7 +1569,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 242, 254, 0.15) !important;
 }
 
+.equipment-card.has-video {
+    border-color: rgba(0, 255, 127, 0.2) !important;
+}
+
+.equipment-card.has-video:hover {
+    border-color: rgba(0, 255, 127, 0.6) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 127, 0.2) !important;
+}
+
 .equipment-icon-box {
+    position: relative;
     width: 44px !important;
     height: 44px !important;
     border-radius: 12px !important;
@@ -1582,6 +1591,28 @@ input[type="range"]::-webkit-slider-thumb:hover {
     justify-content: center !important;
     font-size: 1.15rem !important;
     flex-shrink: 0 !important;
+}
+
+.has-video .equipment-icon-box {
+    background: rgba(0, 255, 127, 0.1) !important;
+    border-color: rgba(0, 255, 127, 0.3) !important;
+    color: #00ff7f !important;
+}
+
+.icon-play-badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #00ff7f;
+    color: #000;
+    font-size: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px rgba(0, 255, 127, 0.8);
 }
 
 .equipment-meta {
@@ -1600,6 +1631,35 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-bottom: 2px !important;
 }
 
+.badge-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.card-play-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ff7f, #00f2fe);
+    border: none;
+    color: #000;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 8px rgba(0, 255, 127, 0.5);
+    padding-left: 2px;
+}
+
+.equipment-card:hover .card-play-btn {
+    transform: scale(1.15);
+    box-shadow: 0 0 14px rgba(0, 255, 127, 0.8);
+}
+
 .equipment-meta .eng-name {
     font-size: 0.92rem !important;
     font-weight: 700 !important;
@@ -1616,7 +1676,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border-radius: 6px !important;
     background: rgba(255, 255, 255, 0.08) !important;
     color: #94a3b8 !important;
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
 }
 
 .equipment-meta .vi-name {
