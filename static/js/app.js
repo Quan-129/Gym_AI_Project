@@ -161,8 +161,10 @@ async function startWebcam() {
 
         showToast("Đã kích hoạt camera thành công!", "success");
 
-        // Start processing loop
-        processWebcamLoop();
+        // Start 60 FPS local render loop and async AI loop
+        state.lastDetections = [];
+        renderLocalVideoLoop();
+        startAiStreamingLoop();
 
     } catch (err) {
         console.error("Webcam Error:", err);
@@ -178,6 +180,7 @@ function stopWebcam() {
     }
     
     state.isStreaming = false;
+    state.lastDetections = [];
     DOM.webcam.srcObject = null;
     
     // Reset Canvas
@@ -213,69 +216,153 @@ function flipCamera() {
     }
 }
 
-// Real-time Frame Loop
-async function processWebcamLoop() {
+// Real-time 60 FPS Video Render Loop
+function renderLocalVideoLoop() {
     if (!state.isStreaming) return;
 
-    if (!state.isProcessingFrame && DOM.webcam.readyState === DOM.webcam.HAVE_ENOUGH_DATA) {
-        state.isProcessingFrame = true;
-        
-        try {
-            // Draw current video frame to an offscreen canvas
-            const offCanvas = document.createElement('canvas');
-            offCanvas.width = 640;
-            offCanvas.height = 480;
-            const offCtx = offCanvas.getContext('2d');
-            offCtx.drawImage(DOM.webcam, 0, 0, offCanvas.width, offCanvas.height);
-            
-            const frameBase64 = offCanvas.toDataURL('image/jpeg', 0.82);
+    if (DOM.webcam && DOM.webcam.readyState >= DOM.webcam.HAVE_CURRENT_DATA) {
+        const ctx = DOM.canvas.getContext('2d');
+        const vw = DOM.webcam.videoWidth;
+        const vh = DOM.webcam.videoHeight;
 
-            const startTime = performance.now();
-            const response = await fetch('/api/detect-frame', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    image: frameBase64,
-                    confidence: state.confidence,
-                    iou: state.iou
-                })
-            });
-
-            const data = await response.json();
-            const inferenceTime = Math.round(performance.now() - startTime);
-
-            if (data.success && state.isStreaming) {
-                // Render returned annotated image on the visible canvas
-                const img = new Image();
-                img.onload = () => {
-                    const ctx = DOM.canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, DOM.canvas.width, DOM.canvas.height);
-                };
-                img.src = data.annotated_image;
-
-                // Update Stats & List
-                updateStats(data.inference_time_ms || inferenceTime, data.count, state.fps);
-                renderDetectionsList(data.detections);
-                state.frameCount++;
-            }
-
-        } catch (err) {
-            console.error("Frame inference error:", err);
-        } finally {
-            state.isProcessingFrame = false;
+        if (vw > 0 && vh > 0 && (DOM.canvas.width !== vw || DOM.canvas.height !== vh)) {
+            DOM.canvas.width = vw;
+            DOM.canvas.height = vh;
         }
+
+        // 1. Draw smooth 60 FPS camera video directly on canvas
+        ctx.drawImage(DOM.webcam, 0, 0, DOM.canvas.width, DOM.canvas.height);
+
+        // 2. Draw active bounding boxes and cyberpunk glow tags on top
+        drawDetectionsOnCanvas(ctx, state.lastDetections, DOM.canvas.width, DOM.canvas.height);
+        
+        state.renderFrameCount = (state.renderFrameCount || 0) + 1;
     }
 
-    // Schedule next frame with requestAnimationFrame
     if (state.isStreaming) {
-        requestAnimationFrame(processWebcamLoop);
+        requestAnimationFrame(renderLocalVideoLoop);
+    }
+}
+
+// Draw Bounding Boxes directly in Browser Canvas
+const NEON_PALETTE = [
+    '#00ff7f', // Spring green
+    '#ff69b4', // Hot pink
+    '#00f2fe', // Electric cyan
+    '#ffd700', // Gold
+    '#a855f7', // Purple
+    '#ff4500', // Orange red
+    '#38bdf8', // Sky blue
+    '#22c55e'  // Emerald
+];
+
+function drawDetectionsOnCanvas(ctx, detections, width, height) {
+    if (!detections || detections.length === 0) return;
+
+    detections.forEach((det) => {
+        let x1, y1, x2, y2;
+        if (det.rel_box && det.rel_box.length === 4) {
+            x1 = det.rel_box[0] * width;
+            y1 = det.rel_box[1] * height;
+            x2 = det.rel_box[2] * width;
+            y2 = det.rel_box[3] * height;
+        } else if (det.box && det.box.length === 4) {
+            x1 = det.box[0];
+            y1 = det.box[1];
+            x2 = det.box[2];
+            y2 = det.box[3];
+        } else {
+            return;
+        }
+
+        const boxW = x2 - x1;
+        const boxH = y2 - y1;
+        const color = NEON_PALETTE[(det.class_id || 0) % NEON_PALETTE.length];
+
+        ctx.save();
+        
+        // Glowing Bounding Box
+        ctx.strokeStyle = color;
+        ctx.lineWidth = Math.max(2.5, Math.round(width / 350));
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 8;
+        ctx.strokeRect(x1, y1, boxW, boxH);
+
+        // Label Banner
+        const label = `${det.class_name} ${Math.round(det.confidence * 100)}%`;
+        const fontSize = Math.max(13, Math.round(width / 42));
+        ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
+        const textWidth = ctx.measureText(label).width;
+        const tagHeight = fontSize + 8;
+        const tagY = Math.max(0, y1 - tagHeight);
+
+        // Semi-transparent tag background
+        ctx.fillStyle = color;
+        ctx.fillRect(x1, tagY, textWidth + 12, tagHeight);
+
+        // Text
+        ctx.fillStyle = '#000000';
+        ctx.shadowBlur = 0;
+        ctx.fillText(label, x1 + 6, tagY + fontSize);
+
+        ctx.restore();
+    });
+}
+
+// Background Asynchronous AI Detection Loop (Low network footprint)
+async function startAiStreamingLoop() {
+    const offCanvas = document.createElement('canvas');
+    const offCtx = offCanvas.getContext('2d');
+
+    while (state.isStreaming) {
+        if (!state.isAiInferring && DOM.webcam && DOM.webcam.readyState >= DOM.webcam.HAVE_CURRENT_DATA) {
+            state.isAiInferring = true;
+            const startTime = performance.now();
+
+            try {
+                // Downscale frame to 320x240 for 8KB lightweight transmission
+                offCanvas.width = 320;
+                offCanvas.height = 240;
+                offCtx.drawImage(DOM.webcam, 0, 0, 320, 240);
+
+                const frameBase64 = offCanvas.toDataURL('image/jpeg', 0.65);
+
+                const response = await fetch('/api/detect-frame', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: frameBase64,
+                        confidence: state.confidence,
+                        iou: state.iou
+                    })
+                });
+
+                if (response.ok && state.isStreaming) {
+                    const data = await response.json();
+                    const latency = Math.round(performance.now() - startTime);
+
+                    if (data.success) {
+                        state.lastDetections = data.detections || [];
+                        updateStats(data.inference_time_ms || latency, data.count || 0, state.fps);
+                        renderDetectionsList(data.detections);
+                    }
+                }
+            } catch (err) {
+                console.warn("Stream frame err:", err);
+            } finally {
+                state.isAiInferring = false;
+            }
+        }
+
+        // 100ms throttle interval between AI requests to keep mobile phone cool & responsive
+        await new Promise(r => setTimeout(r, 100));
     }
 }
 
 function setupFpsCalculator() {
     setInterval(() => {
-        state.fps = state.frameCount;
-        state.frameCount = 0;
+        state.fps = state.renderFrameCount || 0;
+        state.renderFrameCount = 0;
         if (state.isStreaming) {
             DOM.statFps.innerHTML = `${state.fps} <small>FPS</small>`;
             DOM.hudFps.textContent = state.fps;

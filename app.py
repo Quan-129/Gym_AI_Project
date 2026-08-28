@@ -274,7 +274,7 @@ async def detect_image(
 
 @app.post("/api/detect-frame")
 async def detect_frame(request: Request):
-    """Run high-speed detection on a single base64 webcam frame."""
+    """Run ultra high-speed detection on a lightweight base64 webcam frame."""
     if not model:
         raise HTTPException(status_code=500, detail="Mô hình AI chưa sẵn sàng.")
 
@@ -300,24 +300,56 @@ async def detect_frame(request: Request):
         if img_bgr is None:
             raise HTTPException(status_code=400, detail="Giải mã frame ảnh thất bại.")
 
-        results = model.predict(
-            source=img_bgr,
-            conf=confidence,
-            iou=iou,
-            imgsz=480,
-            device=DEVICE,
-            verbose=False
-        )
+        h, w = img_bgr.shape[:2]
+
+        with torch.no_grad():
+            results = model.predict(
+                source=img_bgr,
+                conf=confidence,
+                iou=iou,
+                imgsz=352 if DEVICE == "cpu" else 480,
+                device=DEVICE,
+                verbose=False
+            )
 
         inference_time_ms = round((time.perf_counter() - start_time) * 1000, 1)
-        detections, annotated_image_url = process_detections(results, img_bgr, conf_threshold=confidence)
+
+        # Fast extraction of relative bounding boxes without heavy base64 image encoding
+        detections = []
+        if results and len(results) > 0:
+            boxes = results[0].boxes
+            if boxes is not None and len(boxes) > 0:
+                for i, box in enumerate(boxes):
+                    score = float(box.conf[0].item())
+                    if score < confidence:
+                        continue
+                    cls_id = int(box.cls[0].item())
+                    cls_name = results[0].names.get(cls_id, f"Class {cls_id}")
+                    xyxy = box.xyxy[0].cpu().numpy()
+                    x1, y1, x2, y2 = map(int, xyxy)
+
+                    rel_box = [
+                        round(x1 / w, 4),
+                        round(y1 / h, 4),
+                        round(x2 / w, 4),
+                        round(y2 / h, 4)
+                    ]
+
+                    detections.append({
+                        "id": i + 1,
+                        "class_id": cls_id,
+                        "class_name": cls_name,
+                        "confidence": round(score, 4),
+                        "confidence_percent": round(score * 100, 1),
+                        "box": [x1, y1, x2, y2],
+                        "rel_box": rel_box
+                    })
 
         return {
             "success": True,
             "inference_time_ms": inference_time_ms,
             "count": len(detections),
-            "detections": detections,
-            "annotated_image": annotated_image_url
+            "detections": detections
         }
 
     except Exception as e:
