@@ -126,8 +126,11 @@ def process_detections(results, orig_img_bgr, conf_threshold: float = 0.25):
 
     h, w, _ = orig_img_bgr.shape
 
-    if results and len(results) > 0:
-        boxes = results[0].boxes
+    results_list = list(results) if results is not None else []
+    if results_list:
+        res0 = results_list[0]
+        boxes = getattr(res0, 'boxes', None)
+        names_map = getattr(res0, 'names', {})
         if boxes is not None and len(boxes) > 0:
             for i, box in enumerate(boxes):
                 score = float(box.conf[0].item())
@@ -135,7 +138,7 @@ def process_detections(results, orig_img_bgr, conf_threshold: float = 0.25):
                     continue
 
                 cls_id = int(box.cls[0].item())
-                cls_name = results[0].names.get(cls_id, f"Class {cls_id}")
+                cls_name = names_map.get(cls_id, f"Class {cls_id}") if isinstance(names_map, dict) else (names_map[cls_id] if cls_id < len(names_map) else f"Class {cls_id}")
                 xyxy = box.xyxy[0].cpu().numpy()
                 x1, y1, x2, y2 = map(int, xyxy)
 
@@ -180,7 +183,7 @@ def process_detections(results, orig_img_bgr, conf_threshold: float = 0.25):
 
     # Encode annotated image to JPEG base64
     _, buffer = cv2.imencode('.jpg', annotated_bgr, [cv2.IMWRITE_JPEG_QUALITY, 88])
-    base64_img = base64.b64encode(buffer).decode('utf-8')
+    base64_img = base64.b64encode(buffer.tobytes()).decode('utf-8')
 
     return detections, f"data:image/jpeg;base64,{base64_img}"
 
@@ -194,7 +197,7 @@ async def index(request: Request):
         context={
             "gpu_name": GPU_NAME,
             "is_cuda": torch.cuda.is_available(),
-            "model_name": os.path.basename(MODEL_PATH)
+            "model_name": os.path.basename(MODEL_PATH) if MODEL_PATH else "best.pt"
         }
     )
 
@@ -203,13 +206,16 @@ async def index(request: Request):
 async def get_model_info():
     """Return model architecture and active runtime information."""
     class_names = []
-    if model and hasattr(model, 'names'):
-        class_names = [model.names[k] for k in sorted(model.names.keys())]
+    if model is not None and hasattr(model, 'names'):
+        if isinstance(model.names, dict):
+            class_names = [model.names[k] for k in sorted(model.names.keys())]
+        elif isinstance(model.names, (list, tuple)):
+            class_names = list(model.names)
 
     return {
         "status": "active" if model is not None else "error",
         "model_path": MODEL_PATH,
-        "model_name": os.path.basename(MODEL_PATH),
+        "model_name": os.path.basename(MODEL_PATH) if MODEL_PATH else "best.pt",
         "device": str(DEVICE),
         "gpu_name": GPU_NAME,
         "cuda_available": torch.cuda.is_available(),
@@ -320,15 +326,18 @@ async def detect_frame(request: Request):
 
         # Fast extraction of relative bounding boxes without heavy base64 image encoding
         detections = []
-        if results and len(results) > 0:
-            boxes = results[0].boxes
+        results_list = list(results) if results is not None else []
+        if results_list:
+            res0 = results_list[0]
+            boxes = getattr(res0, 'boxes', None)
+            names_map = getattr(res0, 'names', {})
             if boxes is not None and len(boxes) > 0:
                 for i, box in enumerate(boxes):
                     score = float(box.conf[0].item())
                     if score < confidence:
                         continue
                     cls_id = int(box.cls[0].item())
-                    cls_name = results[0].names.get(cls_id, f"Class {cls_id}")
+                    cls_name = names_map.get(cls_id, f"Class {cls_id}") if isinstance(names_map, dict) else (names_map[cls_id] if cls_id < len(names_map) else f"Class {cls_id}")
                     xyxy = box.xyxy[0].cpu().numpy()
                     x1, y1, x2, y2 = map(int, xyxy)
 
