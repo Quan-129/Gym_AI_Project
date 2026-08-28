@@ -350,7 +350,7 @@ body {
     height: 100%;
     object-fit: contain;
     z-index: 1;
-    background: #000;
+    display: none;
 }
 
 .viewfinder-wrapper canvas {
@@ -361,7 +361,7 @@ body {
     height: 100%;
     object-fit: contain;
     z-index: 2;
-    pointer-events: none;
+    background: #000;
 }
 
 /* Standby Placeholder */

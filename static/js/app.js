@@ -137,18 +137,24 @@ async function startWebcam() {
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         state.mediaStream = stream;
+        DOM.webcam.setAttribute('autoplay', '');
+        DOM.webcam.setAttribute('muted', '');
+        DOM.webcam.setAttribute('playsinline', '');
+        DOM.webcam.setAttribute('webkit-playsinline', '');
+        DOM.webcam.muted = true;
         DOM.webcam.srcObject = stream;
 
-        await new Promise((resolve) => {
-            DOM.webcam.onloadedmetadata = () => {
-                DOM.webcam.play();
-                resolve();
-            };
-        });
+        try {
+            await DOM.webcam.play();
+        } catch (e) {
+            console.warn("Play error:", e);
+        }
 
-        // Setup Canvas Dimensions
-        DOM.canvas.width = DOM.webcam.videoWidth || 1280;
-        DOM.canvas.height = DOM.webcam.videoHeight || 720;
+        // Setup Canvas Dimensions with fallbacks
+        const vw = DOM.webcam.videoWidth || 1280;
+        const vh = DOM.webcam.videoHeight || 720;
+        DOM.canvas.width = vw;
+        DOM.canvas.height = vh;
 
         state.isStreaming = true;
         DOM.cameraStandby.style.display = 'none';
@@ -220,20 +226,20 @@ function flipCamera() {
 function renderLocalVideoLoop() {
     if (!state.isStreaming) return;
 
-    if (DOM.webcam && DOM.webcam.readyState >= DOM.webcam.HAVE_CURRENT_DATA) {
+    if (DOM.webcam && DOM.webcam.readyState >= 2) {
         const ctx = DOM.canvas.getContext('2d');
-        const vw = DOM.webcam.videoWidth;
-        const vh = DOM.webcam.videoHeight;
+        const vw = DOM.webcam.videoWidth || 640;
+        const vh = DOM.webcam.videoHeight || 480;
 
-        if (vw > 0 && vh > 0 && (DOM.canvas.width !== vw || DOM.canvas.height !== vh)) {
+        if (DOM.canvas.width !== vw || DOM.canvas.height !== vh) {
             DOM.canvas.width = vw;
             DOM.canvas.height = vh;
         }
 
-        // Clear previous bounding box overlay
-        ctx.clearRect(0, 0, DOM.canvas.width, DOM.canvas.height);
+        // 1. Draw live camera video frame explicitly onto canvas
+        ctx.drawImage(DOM.webcam, 0, 0, DOM.canvas.width, DOM.canvas.height);
 
-        // Draw active bounding boxes and cyberpunk glow tags on top
+        // 2. Draw active bounding boxes and cyberpunk glow tags on top
         drawDetectionsOnCanvas(ctx, state.lastDetections, DOM.canvas.width, DOM.canvas.height);
         
         state.renderFrameCount = (state.renderFrameCount || 0) + 1;
