@@ -47,12 +47,13 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-TEST_IMAGES_DIR = os.path.join(BASE_DIR, "Gym-Dataset-2", "test", "images")
+SAMPLES_DIR = os.path.join(STATIC_DIR, "samples")
 
 # Ensure directories exist
 os.makedirs(STATIC_DIR, exist_ok=True)
 os.makedirs(os.path.join(STATIC_DIR, "css"), exist_ok=True)
 os.makedirs(os.path.join(STATIC_DIR, "js"), exist_ok=True)
+os.makedirs(SAMPLES_DIR, exist_ok=True)
 os.makedirs(TEMPLATES_DIR, exist_ok=True)
 
 # Mount static files
@@ -235,11 +236,20 @@ async def detect_image(
         if img_bgr is None:
             raise HTTPException(status_code=400, detail="Không thể đọc định dạng ảnh tải lên.")
 
+        # Optimize input size for fast cloud CPU inference
+        h, w = img_bgr.shape[:2]
+        max_dim = 960
+        if max(h, w) > max_dim:
+            scale = max_dim / max(h, w)
+            new_w, new_h = int(w * scale), int(h * scale)
+            img_bgr = cv2.resize(img_bgr, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
         # Run inference
         results = model.predict(
             source=img_bgr,
             conf=confidence,
             iou=iou,
+            imgsz=640,
             device=DEVICE,
             verbose=False
         )
@@ -293,6 +303,7 @@ async def detect_frame(request: Request):
             source=img_bgr,
             conf=confidence,
             iou=iou,
+            imgsz=480,
             device=DEVICE,
             verbose=False
         )
@@ -314,20 +325,20 @@ async def detect_frame(request: Request):
 
 @app.get("/api/sample-images")
 async def get_sample_images():
-    """List sample test images available in the dataset for 1-click testing."""
+    """List sample test images available in the static/samples folder."""
     sample_files = []
-    if os.path.exists(TEST_IMAGES_DIR):
-        files = glob.glob(os.path.join(TEST_IMAGES_DIR, "*.jpg"))[:12]
+    if os.path.exists(SAMPLES_DIR):
+        files = glob.glob(os.path.join(SAMPLES_DIR, "*.jpg"))
         for f in files:
             sample_files.append(os.path.basename(f))
 
-    return {"samples": sample_files}
+    return {"samples": sorted(sample_files)}
 
 
 @app.get("/api/sample-image-file/{filename}")
 async def get_sample_image_file(filename: str):
-    """Serve a sample image file from the test dataset."""
-    file_path = os.path.join(TEST_IMAGES_DIR, filename)
+    """Serve a sample image file from static/samples."""
+    file_path = os.path.join(SAMPLES_DIR, filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File không tồn tại.")
     return FileResponse(file_path, media_type="image/jpeg")

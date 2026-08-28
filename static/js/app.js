@@ -343,8 +343,15 @@ async function runImageInference(fileOrBlob) {
 
     DOM.dropzone.style.display = 'none';
     DOM.imageResultWrapper.style.display = 'flex';
-    DOM.resultImage.src = '';
-    DOM.resultImage.alt = "Đang phân tích thiết bị...";
+    
+    // Show instant preview of the uploaded image immediately
+    try {
+        DOM.resultImage.src = URL.createObjectURL(fileOrBlob);
+    } catch (e) {
+        // Fallback
+    }
+    DOM.resultImage.style.opacity = '0.7';
+    DOM.resultImage.style.transition = 'all 0.3s ease';
 
     try {
         const response = await fetch('/api/detect-image', {
@@ -356,20 +363,21 @@ async function runImageInference(fileOrBlob) {
 
         if (data.success) {
             DOM.resultImage.src = data.annotated_image;
+            DOM.resultImage.style.opacity = '1';
             DOM.downloadBtn.href = data.annotated_image;
             
             updateStats(data.inference_time_ms, data.count, 0);
             renderDetectionsList(data.detections);
             showToast(`Phát hiện ${data.count} thiết bị trong ${data.inference_time_ms}ms!`, "success");
         } else {
+            DOM.resultImage.style.opacity = '1';
             showToast(`Lỗi nhận diện: ${data.error || 'Thử lại sau'}`, "error");
-            clearUpload();
         }
 
     } catch (err) {
         console.error("Image inference error:", err);
+        DOM.resultImage.style.opacity = '1';
         showToast("Lỗi kết nối máy chủ nhận diện!", "error");
-        clearUpload();
     }
 }
 
