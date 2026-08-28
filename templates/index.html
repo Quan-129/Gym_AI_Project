@@ -343,10 +343,44 @@
         </div>
     </div>
 
+    <!-- Equipment Video & Animation Guide Modal -->
+    <div class="video-modal-backdrop" id="videoModal" style="display: none;" onclick="handleVideoModalBackdrop(event)">
+        <div class="video-modal-dialog">
+            <div class="video-modal-header">
+                <div class="video-modal-title">
+                    <div class="video-title-icon"><i class="fa-solid fa-circle-play"></i></div>
+                    <div>
+                        <h3 id="videoModalEquipmentName">Treadmill</h3>
+                        <p id="videoModalViName">Máy chạy bộ điện • Hướng dẫn tập luyện</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeVideoModal()" title="Đóng">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="video-player-container">
+                <video id="tutorialVideoPlayer" autoplay loop muted playsinline controls></video>
+                <div class="no-video-placeholder" id="noVideoPlaceholder" style="display: none;">
+                    <i class="fa-solid fa-film"></i>
+                    <p>Đang cập nhật video hoạt hình cho thiết bị này...</p>
+                </div>
+            </div>
+
+            <div class="video-modal-body">
+                <div class="guide-info-badge" id="videoModalCategory">Cardio</div>
+                <div class="guide-desc-box">
+                    <h4><i class="fa-solid fa-circle-info text-accent"></i> Hướng Dẫn & Tác Dụng:</h4>
+                    <p id="videoModalDesc">Máy tập chạy bộ, đi bộ dốc đốt calo, nâng cao thể lực tim mạch.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Toast Message Notification -->
     <div id="toast" class="toast"></div>
 
     <!-- Main JavaScript -->
-    <script src="/static/js/app.js?v=2.2"></script>
+    <script src="/static/js/app.js?v=2.3"></script>
 </body>
 </html>

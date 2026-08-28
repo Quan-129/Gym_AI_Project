@@ -49,15 +49,19 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 SAMPLES_DIR = os.path.join(STATIC_DIR, "samples")
 
+ANIMATION_DIR = os.path.join(BASE_DIR, "machine-animation")
+
 # Ensure directories exist
 os.makedirs(STATIC_DIR, exist_ok=True)
 os.makedirs(os.path.join(STATIC_DIR, "css"), exist_ok=True)
 os.makedirs(os.path.join(STATIC_DIR, "js"), exist_ok=True)
 os.makedirs(SAMPLES_DIR, exist_ok=True)
 os.makedirs(TEMPLATES_DIR, exist_ok=True)
+os.makedirs(ANIMATION_DIR, exist_ok=True)
 
 # Mount static files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/machine-animation", StaticFiles(directory=ANIMATION_DIR), name="machine-animation")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 # Find Best Model Weight
@@ -375,6 +379,29 @@ async def get_sample_image_file(filename: str):
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="File không tồn tại.")
     return FileResponse(file_path, media_type="image/jpeg")
+
+
+@app.get("/api/machine-animations")
+async def get_machine_animations():
+    """Scan machine-animation directory and return dictionary mapping equipment names to media URLs."""
+    animations = {}
+    if os.path.exists(ANIMATION_DIR):
+        for root, _, files in os.walk(ANIMATION_DIR):
+            for file in files:
+                if file.lower().endswith(('.mp4', '.webm', '.gif', '.mov', '.png', '.jpg', '.jpeg')):
+                    rel_path = os.path.relpath(os.path.join(root, file), ANIMATION_DIR).replace("\\", "/")
+                    base_name = os.path.splitext(file)[0].strip()
+                    url = f"/machine-animation/{rel_path}"
+                    
+                    # Direct and case-insensitive keys
+                    animations[base_name] = url
+                    animations[base_name.lower()] = url
+                    
+                    # Cleaned keys (remove punctuation and hyphens)
+                    clean_key = base_name.lower().replace("-", " ").replace("_", " ").strip()
+                    animations[clean_key] = url
+                    
+    return {"animations": animations}
 
 
 if __name__ == "__main__":

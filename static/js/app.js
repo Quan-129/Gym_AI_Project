@@ -16,7 +16,8 @@ const state = {
     frameCount: 0,
     fps: 0,
     fpsInterval: null,
-    selectedImageBlob: null
+    selectedImageBlob: null,
+    animationsMap: {}
 };
 
 // DOM Elements Cache
@@ -67,6 +68,7 @@ const DOM = {
 document.addEventListener('DOMContentLoaded', () => {
     fetchModelInfo();
     fetchSampleImages();
+    loadMachineAnimations();
     setupFpsCalculator();
 });
 
@@ -666,11 +668,24 @@ function renderDetectionsList(detections) {
     
     let html = '';
     detections.forEach(det => {
+        const videoUrl = findAnimationUrl(det.class_name);
+        const hasVideo = !!videoUrl;
+        const safeName = (det.class_name || '').replace(/'/g, "\\'");
+
         html += `
-            <div class="detection-card" style="border-left-color: ${det.color || '#00ff7f'};">
+            <div class="detection-card" style="border-left-color: ${det.color || '#00ff7f'};" onclick="openEquipmentVideo('${safeName}')" title="Nhấn để xem hướng dẫn hoạt hình bài tập">
                 <div class="det-info">
                     <span class="det-name">${det.class_name}</span>
                     <span class="det-id">Box: [${det.box.join(', ')}]</span>
+                    ${hasVideo ? `
+                        <div class="det-video-btn">
+                            <i class="fa-solid fa-circle-play"></i> Video Hoạt Hình
+                        </div>
+                    ` : `
+                        <div class="det-video-btn" style="background: rgba(255,255,255,0.06); color: #94a3b8; border-color: rgba(255,255,255,0.1);">
+                            <i class="fa-solid fa-book-open"></i> Hướng Dẫn
+                        </div>
+                    `}
                 </div>
                 <div class="det-score">
                     <span class="score-text">${det.confidence_percent}%</span>
@@ -683,6 +698,107 @@ function renderDetectionsList(detections) {
     });
 
     DOM.detectionsList.innerHTML = html;
+}
+
+// Load Available Machine Animation Videos
+async function loadMachineAnimations() {
+    try {
+        const response = await fetch('/api/machine-animations');
+        if (response.ok) {
+            const data = await response.json();
+            state.animationsMap = data.animations || {};
+            console.log("🎬 Loaded machine animations:", Object.keys(state.animationsMap).length);
+            
+            // Re-render directory grid if already populated
+            filterEquipmentDirectory();
+        }
+    } catch (err) {
+        console.warn("Could not load machine animations:", err);
+    }
+}
+
+// Match equipment name with animation files
+function findAnimationUrl(equipmentName) {
+    if (!equipmentName || !state.animationsMap) return null;
+    
+    const raw = equipmentName.trim();
+    if (state.animationsMap[raw]) return state.animationsMap[raw];
+    
+    const lower = raw.toLowerCase();
+    if (state.animationsMap[lower]) return state.animationsMap[lower];
+    
+    const clean = lower.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (state.animationsMap[clean]) return state.animationsMap[clean];
+
+    // Substring / keyword fuzzy matching
+    for (const [key, url] of Object.entries(state.animationsMap)) {
+        const k = key.toLowerCase();
+        if (k && (lower.includes(k) || k.includes(lower))) {
+            return url;
+        }
+    }
+
+    return null;
+}
+
+// Open Video & Animation Player Modal
+function openEquipmentVideo(equipmentName) {
+    const rawName = equipmentName || '';
+    const item = GYM_EQUIPMENT_DATABASE.find(e => 
+        e.name.toLowerCase() === rawName.toLowerCase() ||
+        rawName.toLowerCase().includes(e.name.toLowerCase()) ||
+        e.name.toLowerCase().includes(rawName.toLowerCase())
+    ) || { 
+        name: rawName, 
+        viName: "Thiết Bị Gym", 
+        catName: "Gym AI", 
+        desc: "Thiết bị nhận diện được từ mô hình AI YOLOv8s." 
+    };
+
+    const videoUrl = findAnimationUrl(rawName) || findAnimationUrl(item.name);
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('tutorialVideoPlayer');
+    const noVideo = document.getElementById('noVideoPlaceholder');
+
+    document.getElementById('videoModalEquipmentName').textContent = item.name;
+    document.getElementById('videoModalViName').textContent = `${item.viName} • Hướng dẫn tập luyện`;
+    document.getElementById('videoModalCategory').textContent = item.catName || 'Thiết bị Gym';
+    document.getElementById('videoModalDesc').textContent = item.desc;
+
+    if (videoUrl) {
+        player.src = videoUrl;
+        player.style.display = 'block';
+        if (noVideo) noVideo.style.display = 'none';
+        player.play().catch(e => console.warn("Video play exception:", e));
+    } else {
+        player.src = '';
+        player.style.display = 'none';
+        if (noVideo) noVideo.style.display = 'flex';
+    }
+
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeVideoModal() {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('tutorialVideoPlayer');
+    if (player) {
+        player.pause();
+        player.src = '';
+    }
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+function handleVideoModalBackdrop(event) {
+    if (event.target.id === 'videoModal') {
+        closeVideoModal();
+    }
 }
 
 // ============================================================
@@ -849,8 +965,12 @@ function renderEquipmentGrid(items) {
 
     let html = '';
     items.forEach(item => {
+        const videoUrl = findAnimationUrl(item.name);
+        const hasVideo = !!videoUrl;
+        const safeName = (item.name || '').replace(/'/g, "\\'");
+
         html += `
-            <div class="equipment-card">
+            <div class="equipment-card" onclick="openEquipmentVideo('${safeName}')" title="Nhấn để xem hướng dẫn chi tiết & hoạt hình">
                 <div class="equipment-icon-box">
                     <i class="fa-solid ${item.icon}"></i>
                 </div>
@@ -861,6 +981,15 @@ function renderEquipmentGrid(items) {
                     </div>
                     <div class="vi-name">${item.viName}</div>
                     <p class="desc-text">${item.desc}</p>
+                    ${hasVideo ? `
+                        <div class="video-play-tag">
+                            <i class="fa-solid fa-circle-play"></i> Xem video hoạt hình
+                        </div>
+                    ` : `
+                        <div class="video-play-tag" style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: #94a3b8;">
+                            <i class="fa-solid fa-circle-info"></i> Xem hướng dẫn
+                        </div>
+                    `}
                 </div>
             </div>
         `;
@@ -869,9 +998,10 @@ function renderEquipmentGrid(items) {
     grid.innerHTML = html;
 }
 
-// Global Keyboard listener: Close modal on Esc
+// Global Keyboard listener: Close modals on Esc
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+        closeVideoModal();
         closeEquipmentModal();
     }
 });
