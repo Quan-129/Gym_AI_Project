@@ -24,4 +24,8 @@ weights/yolo26n.pt
 # IDE & Configs
 .vscode/
 .idea/
-.agents/
+
+# Track project skills
+!.agents/
+!.agents/skills/
+!.agents/skills/**
