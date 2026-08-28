@@ -27,11 +27,12 @@
   - Tab 🖼️ **Tải ảnh lên:** Kéo thả ảnh (Drag & Drop), thanh trượt điều chỉnh Confidence (10% - 95%), danh sách thẻ thiết bị phát hiện được.
   - Kho ảnh mẫu (Sample Images) từ tập Test để thử nghiệm với 1 cú click.
 - [x] **Khởi chạy máy chủ Web thành công:** Sẵn sàng tại `http://localhost:8000`.
-- [x] **Đóng gói & Triển khai Cloud Thành công (Render.com / Docker):**
+- [x] **Đóng gói & Triển khai Cloud Thành công (Railway & Render Cloud):**
   - Tạo `Dockerfile`, `render.yaml`, `requirements.txt`, đẩy repo lên GitHub `Quan-129/Gym_AI_Project`.
-  - Khắc phục lỗi `Out of memory (>512Mi)` bằng cách dùng PyTorch CPU-only và giới hạn luồng `OMP_NUM_THREADS=1`.
-  - Xuất thành công định dạng **ONNX** (`weights/best.onnx` - 42.8 MB) để tăng tốc độ suy luận.
-  - **🚀 Production URL:** **[https://gym-ai-project-44yz.onrender.com/](https://gym-ai-project-44yz.onrender.com/)** *(Hoạt động 100% với HTTPS cho Camera di động)*.
+  - Khắc phục lỗi `Out of memory (>512Mi)` bằng cách dùng PyTorch CPU-only và tối ưu kích thước suy luận.
+  - Xuất thành công định dạng **ONNX** (`weights/best.onnx` - 42.8 MB) và giao diện **Gradio** (`app_gradio.py`).
+  - **🚀 Primary Production URL (Railway - Siêu tốc ~215ms):** **[https://gym-ai-vision-production.up.railway.app/](https://gym-ai-vision-production.up.railway.app/)**
+  - **🌐 Backup Mirror (Render):** **[https://gym-ai-project-44yz.onrender.com/](https://gym-ai-project-44yz.onrender.com/)**
 
 ---
 
