@@ -351,26 +351,29 @@ function startAiLoadingAnimation() {
     if (!DOM.aiLoadingOverlay) return;
     
     DOM.aiLoadingOverlay.style.display = 'flex';
-    DOM.progressBarFill.style.width = '0%';
-    DOM.progressPercent.textContent = '0%';
-    DOM.progressStage.textContent = 'Đang nạp ảnh & chuẩn bị...';
+    DOM.progressBarFill.style.width = '5%';
+    DOM.progressPercent.textContent = '5%';
+    DOM.progressStage.textContent = 'Đang nạp ảnh vào AI...';
 
-    let currentProgress = 0;
+    let currentProgress = 5;
     const stages = [
         { threshold: 25, text: 'Đang tải ảnh & tiền xử lý tensor...' },
-        { threshold: 55, text: 'Đang quét nhận diện 69 thiết bị Gym...' },
-        { threshold: 85, text: 'Đang tính toán Bounding Box & IoU NMS...' },
-        { threshold: 95, text: 'Đang kết xuất khung định vị thiết bị...' }
+        { threshold: 50, text: 'Đang quét nhận diện 69 thiết bị Gym...' },
+        { threshold: 75, text: 'Đang tính toán Bounding Box & IoU...' },
+        { threshold: 92, text: 'Đang kết xuất khung định vị thiết bị...' },
+        { threshold: 98, text: 'Đang tối ưu ảnh trả về client...' }
     ];
 
     if (progressInterval) clearInterval(progressInterval);
 
     progressInterval = setInterval(() => {
-        if (currentProgress < 90) {
-            const increment = Math.max(1, Math.floor((90 - currentProgress) * 0.12));
-            currentProgress += increment;
-            DOM.progressBarFill.style.width = `${currentProgress}%`;
-            DOM.progressPercent.textContent = `${currentProgress}%`;
+        if (currentProgress < 96) {
+            const diff = 97 - currentProgress;
+            const step = Math.max(0.5, diff * 0.08);
+            currentProgress = Math.min(96, Math.round((currentProgress + step) * 10) / 10);
+            
+            DOM.progressBarFill.style.width = `${Math.floor(currentProgress)}%`;
+            DOM.progressPercent.textContent = `${Math.floor(currentProgress)}%`;
 
             for (const stage of stages) {
                 if (currentProgress <= stage.threshold) {
@@ -379,7 +382,7 @@ function startAiLoadingAnimation() {
                 }
             }
         }
-    }, 120);
+    }, 150);
 }
 
 function completeAiLoadingAnimation(onComplete) {

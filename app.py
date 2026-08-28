@@ -81,20 +81,21 @@ if not MODEL_PATH:
 # Detect GPU
 DEVICE = 0 if torch.cuda.is_available() else "cpu"
 GPU_NAME = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
+INFERENCE_IMGSZ = 640 if torch.cuda.is_available() else 416
 
 if DEVICE == "cpu":
-    # Limit PyTorch CPU threads to prevent memory explosion on 512MB RAM
-    torch.set_num_threads(1)
+    # Use 2 threads for balanced fast inference without exceeding 512MB RAM
+    try:
+        torch.set_num_threads(2)
+    except Exception:
+        pass
 
 print(f"🚀 [Gym AI] Loading model: {MODEL_PATH}")
-print(f"⚡ [Gym AI] Device: {DEVICE} ({GPU_NAME})")
+print(f"⚡ [Gym AI] Device: {DEVICE} ({GPU_NAME}) | Inference Image Size: {INFERENCE_IMGSZ}")
 
 try:
     model = YOLO(MODEL_PATH)
     print("✅ [Gym AI] Model loaded successfully!")
-except Exception as e:
-    print(f"⚠️ [Gym AI] Error loading model {MODEL_PATH}: {e}")
-    model = None
 except Exception as e:
     print(f"⚠️ [Gym AI] Error loading model {MODEL_PATH}: {e}")
     model = None
@@ -238,7 +239,7 @@ async def detect_image(
 
         # Optimize input size for fast cloud CPU inference
         h, w = img_bgr.shape[:2]
-        max_dim = 960
+        max_dim = 640 if DEVICE == "cpu" else 1024
         if max(h, w) > max_dim:
             scale = max_dim / max(h, w)
             new_w, new_h = int(w * scale), int(h * scale)
@@ -249,7 +250,7 @@ async def detect_image(
             source=img_bgr,
             conf=confidence,
             iou=iou,
-            imgsz=640,
+            imgsz=INFERENCE_IMGSZ,
             device=DEVICE,
             verbose=False
         )

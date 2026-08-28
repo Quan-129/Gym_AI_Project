@@ -553,8 +553,9 @@ body {
 
 .result-img-container {
     width: 100%;
-    max-height: 520px;
-    background: #000;
+    min-height: 420px;
+    max-height: 540px;
+    background: radial-gradient(circle at center, rgba(18, 24, 36, 0.95), #06090e);
     border-radius: var(--radius-md);
     overflow: hidden;
     display: flex;
@@ -567,6 +568,7 @@ body {
 .result-img-container img {
     max-width: 100%;
     max-height: 520px;
+    min-height: 380px;
     object-fit: contain;
     border-radius: var(--radius-sm);
     display: block;
@@ -578,15 +580,17 @@ body {
 .ai-loading-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(10, 13, 20, 0.78);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 13, 20, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 20;
-    padding: 20px;
-    animation: overlayFadeIn 0.3s ease-out;
+    z-index: 50;
+    padding: 16px;
+    animation: overlayFadeIn 0.25s ease-out;
 }
 
 @keyframes overlayFadeIn {
@@ -612,19 +616,20 @@ body {
 }
 
 .loading-modal-card {
-    background: rgba(18, 24, 36, 0.9);
-    border: 1px solid rgba(0, 255, 127, 0.3);
+    background: rgba(18, 24, 36, 0.96);
+    border: 1px solid rgba(0, 255, 127, 0.35);
     border-radius: var(--radius-lg);
-    padding: 24px 30px;
+    padding: 20px 24px;
     text-align: center;
-    max-width: 360px;
-    width: 100%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 255, 127, 0.15);
+    max-width: 330px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75), 0 0 30px rgba(0, 255, 127, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
     transform: scale(0.95);
     animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    margin: auto;
 }
 
 @keyframes popIn {
@@ -634,12 +639,12 @@ body {
 /* Cyber Radar Spinner */
 .cyber-spinner {
     position: relative;
-    width: 72px;
-    height: 72px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .spinner-ring {
