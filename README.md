@@ -1,3 +1,15 @@
+---
+title: Gym AI Vision - 69 Equipment Detector
+emoji: 🏋️‍♂️
+colorFrom: green
+colorTo: blue
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app_gradio.py
+pinned: false
+license: mit
+---
+
 # 🏋️‍♂️ Gym AI Project - Intelligent Gym Equipment & Workout Assistant
 
 [![Live Demo](https://img.shields.io/badge/Render-Live%20Demo-46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)](https://gym-ai-project-44yz.onrender.com/)
