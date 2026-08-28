@@ -63,7 +63,80 @@ Dataset được thu thập và tiền xử lý từ Roboflow Universe bao gồm
 - **Tập Train:** ~18.089 ảnh
 - **Tập Validation:** ~2.260 ảnh
 - **Tập Test:** ~1.100 ảnh
-- **Danh sách nhãn tiêu biểu:** *Ab Crunch Machine, Arm Curl Machine, Barbell, Bench, Cable Machine, Chest Machine, Dumbbell, Elliptical, Functional Trainer, Kettlebell, Lat Pull Down Machine, Leg Extension Machine, Leg Press Machine, Pull Up Bar, Resistance Bands, Smith Machine, Squat Rack, Treadmill,...*
+
+### 📋 Danh mục 69 loại thiết bị & máy tập Gym được nhận diện:
+
+#### 🏃‍♂️ 1. Nhóm Máy Tập Cardio (Đốt mỡ & Tim mạch)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Treadmill** | Máy chạy bộ điện |
+| **Stationary Bike** | Xe đạp tập thể lực đứng |
+| **Recumbent Bike** | Xe đạp tập có tựa lưng |
+| **Elliptical / Cross-trainer** | Máy tập đi bộ trên không (Elip) |
+| **Stair Climber** | Máy leo cầu thang |
+
+#### 🏋️ 2. Nhóm Máy Tập Cơ Chân, Mông & Đùi (Lower Body)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Leg Press / Leg Press Machine** | Máy đạp đùi (Leg Press nghiêng 45 độ) |
+| **Hack Squat Machine** | Máy gánh đùi xiên Hack Squat |
+| **Squat Rack** | Khung gánh tạ Squat tự do |
+| **Smith Machine** | Máy gánh tạ khung ray trượt an toàn |
+| **Leg Extension Machine** | Máy đá đùi trước |
+| **Leg Curl Machine / Hamstring Curl** | Máy móc đùi sau (nằm/ngồi) |
+| **Hip Adduction Machine** | Máy ép/mở đùi trong và đùi ngoài |
+| **Glute Drive Machine** | Máy đẩy hông tập mông (Hip Thrust Machine) |
+| **Seated Calf Raise Machine** | Máy nhón bắp chân ngồi |
+
+#### 💪 3. Nhóm Máy Tập Ngực, Vai & Lưng Xô (Upper Body)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Chest Machine** | Máy đẩy ngực / ép ngực (Chest Press / Pec Fly) |
+| **Shoulder Press Machine** | Máy đẩy vai ngồi |
+| **Lateral Raise Machine** | Máy tập cơ vai ngang |
+| **Lat Pull Down Machine** | Máy kéo xô lưng thẳng |
+| **Seated Row Machine** | Máy chèo thuyền kéo lưng xô ngồi |
+| **Back Extension Machine** | Máy gập duỗi lưng dưới (Hyperextension) |
+
+#### 🦾 4. Nhóm Máy Tập Tay & Cơ Bụng (Arms & Core)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Arm Curl Machine** | Máy cuốn bắp tay trước |
+| **Preacher Curl** | Ghế / máy dốc tập bắp tay trước (Preacher) |
+| **Triceps Extension Machine** | Máy duỗi bắp tay sau |
+| **Seated Dip Machine** | Máy nhấn xà tập cơ tay sau & ngực dưới |
+| **Ab Crunch Machine** | Máy gập bụng có tải trọng tạ |
+| **Ab Roller** | Con lăn tập cơ bụng |
+| **Leg Raise Tower / Roman Chair / GHD** | Tháp đu xà kép nâng gối / Ghế La Mã tập bụng |
+
+#### ⛓️ 5. Khung Cáp Đa Năng & Các Đầu Kéo Cáp (Cable Machines)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Cable Machine / Functional Trainer** | Dàn máy kéo cáp đa năng 2 bên |
+| **Multi-Station Home Gym Machine** | Giàn tập tạ khối đa năng tổng hợp |
+| **V-Bar Cable Attachment** | Tay nắm kéo cáp chữ V |
+| **Straight Bar Attachment** | Thanh đòn thẳng kéo cáp |
+| **EZ Bar Cable Attachment** | Thanh đòn uốn lượn ziczac kéo cáp |
+| **Single Cable Rope Attachment** | Dây thừng kéo cáp tập tay sau/bụng |
+| **Wide Grip / Close Grip Cable Attachment**| Thanh kéo xô rộng / hẹp |
+| **Mag Cable Attachment** | Tay cầm kéo xô công thái học (MAG Grip) |
+
+#### 🥊 6. Tạ Tự Do & Dụng Cụ Thể Lực (Free Weights & Accessories)
+| Tên thiết bị (Tiếng Anh) | Tên tiếng Việt / Chức năng |
+| :--- | :--- |
+| **Dumbbell** | Tạ đơn (tạ tay các mức kg) |
+| **Barbell** | Tạ đòn dài tiêu chuẩn Olympic |
+| **Kettlebell** | Tạ bình vôi (tạ chuông quai cầm) |
+| **Plates** | Bánh tạ đĩa (tạ đĩa gang / cao su) |
+| **Bench** | Ghế tập tạ (ghế phẳng, ghế dốc lên, dốc xuống) |
+| **Pull Up Bar / Parallel Bars** | Xà đơn / Xà kép |
+| **Assisted Pull Up and Dip Machine** | Máy trợ lực kéo xà đơn & xà kép |
+| **Punching Bag** | Bao cát boxing |
+| **Resistance Bands** | Dây thun kháng lực cao su |
+| **Plyometric Box** | Hộp gỗ nhảy bật thể lực |
+| **Ball** | Bóng tập thể lực (Gym Ball / Slam Ball) |
+| **Push Up Equipment** | Dụng cụ hỗ trợ chống đẩy |
+| **Foam Equipment** | Con lăn bọt giãn cơ (Foam Roller) |
 
 ---
 
