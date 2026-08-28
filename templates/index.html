@@ -152,8 +152,35 @@
 
                     <!-- Image Result Canvas Area -->
                     <div class="image-result-wrapper" id="imageResultWrapper" style="display: none;">
-                        <div class="result-img-container">
+                        <div class="result-img-container" id="resultImgContainer">
                             <img id="resultImage" alt="Gym Equipment Detection Result">
+                            
+                            <!-- Futuristic AI Loading Overlay & Progress Bar -->
+                            <div class="ai-loading-overlay" id="aiLoadingOverlay" style="display: none;">
+                                <div class="scanner-laser"></div>
+                                <div class="loading-modal-card">
+                                    <div class="cyber-spinner">
+                                        <div class="spinner-ring ring-1"></div>
+                                        <div class="spinner-ring ring-2"></div>
+                                        <div class="spinner-core">
+                                            <i class="fa-solid fa-brain"></i>
+                                        </div>
+                                    </div>
+                                    <h4 class="loading-title" id="loadingTitle">AI Đang Phân Tích Hình Ảnh...</h4>
+                                    <p class="loading-subtitle" id="loadingSubtitle">Đang nhận diện 69 lớp thiết bị Gym</p>
+                                    
+                                    <!-- Progress Bar Container -->
+                                    <div class="progress-wrapper">
+                                        <div class="progress-bar-track">
+                                            <div class="progress-bar-fill" id="progressBarFill"></div>
+                                        </div>
+                                        <div class="progress-meta">
+                                            <span class="progress-stage" id="progressStage">Khởi tạo dữ liệu...</span>
+                                            <span class="progress-percent" id="progressPercent">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="img-actions">
                             <button class="btn btn-secondary btn-sm" onclick="clearUpload()">

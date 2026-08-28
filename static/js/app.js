@@ -54,7 +54,13 @@ const DOM = {
     downloadBtn: document.getElementById('downloadBtn'),
     sampleGrid: document.getElementById('sampleGrid'),
     toast: document.getElementById('toast'),
-    modelNameDisplay: document.getElementById('modelNameDisplay')
+    modelNameDisplay: document.getElementById('modelNameDisplay'),
+    aiLoadingOverlay: document.getElementById('aiLoadingOverlay'),
+    progressBarFill: document.getElementById('progressBarFill'),
+    progressStage: document.getElementById('progressStage'),
+    progressPercent: document.getElementById('progressPercent'),
+    loadingTitle: document.getElementById('loadingTitle'),
+    loadingSubtitle: document.getElementById('loadingSubtitle')
 };
 
 // Initialize Application
@@ -335,6 +341,71 @@ async function processUploadedFile(file) {
     await runImageInference(file);
 }
 
+// ============================================================
+// AI LOADING OVERLAY & PROGRESS BAR ANIMATOR
+// ============================================================
+
+let progressInterval = null;
+
+function startAiLoadingAnimation() {
+    if (!DOM.aiLoadingOverlay) return;
+    
+    DOM.aiLoadingOverlay.style.display = 'flex';
+    DOM.progressBarFill.style.width = '0%';
+    DOM.progressPercent.textContent = '0%';
+    DOM.progressStage.textContent = 'Đang nạp ảnh & chuẩn bị...';
+
+    let currentProgress = 0;
+    const stages = [
+        { threshold: 25, text: 'Đang tải ảnh & tiền xử lý tensor...' },
+        { threshold: 55, text: 'Đang quét nhận diện 69 thiết bị Gym...' },
+        { threshold: 85, text: 'Đang tính toán Bounding Box & IoU NMS...' },
+        { threshold: 95, text: 'Đang kết xuất khung định vị thiết bị...' }
+    ];
+
+    if (progressInterval) clearInterval(progressInterval);
+
+    progressInterval = setInterval(() => {
+        if (currentProgress < 90) {
+            const increment = Math.max(1, Math.floor((90 - currentProgress) * 0.12));
+            currentProgress += increment;
+            DOM.progressBarFill.style.width = `${currentProgress}%`;
+            DOM.progressPercent.textContent = `${currentProgress}%`;
+
+            for (const stage of stages) {
+                if (currentProgress <= stage.threshold) {
+                    DOM.progressStage.textContent = stage.text;
+                    break;
+                }
+            }
+        }
+    }, 120);
+}
+
+function completeAiLoadingAnimation(onComplete) {
+    if (progressInterval) clearInterval(progressInterval);
+    
+    if (DOM.progressBarFill) {
+        DOM.progressBarFill.style.width = '100%';
+        DOM.progressPercent.textContent = '100%';
+        DOM.progressStage.textContent = '✅ Hoàn tất nhận diện!';
+    }
+
+    setTimeout(() => {
+        if (DOM.aiLoadingOverlay) {
+            DOM.aiLoadingOverlay.style.display = 'none';
+        }
+        if (typeof onComplete === 'function') onComplete();
+    }, 320);
+}
+
+function hideAiLoadingAnimation() {
+    if (progressInterval) clearInterval(progressInterval);
+    if (DOM.aiLoadingOverlay) {
+        DOM.aiLoadingOverlay.style.display = 'none';
+    }
+}
+
 async function runImageInference(fileOrBlob) {
     const formData = new FormData();
     formData.append('file', fileOrBlob, 'test_image.jpg');
@@ -350,8 +421,9 @@ async function runImageInference(fileOrBlob) {
     } catch (e) {
         // Fallback
     }
-    DOM.resultImage.style.opacity = '0.7';
-    DOM.resultImage.style.transition = 'all 0.3s ease';
+
+    // Start progress bar animation
+    startAiLoadingAnimation();
 
     try {
         const response = await fetch('/api/detect-image', {
@@ -362,21 +434,22 @@ async function runImageInference(fileOrBlob) {
         const data = await response.json();
 
         if (data.success) {
-            DOM.resultImage.src = data.annotated_image;
-            DOM.resultImage.style.opacity = '1';
-            DOM.downloadBtn.href = data.annotated_image;
-            
-            updateStats(data.inference_time_ms, data.count, 0);
-            renderDetectionsList(data.detections);
-            showToast(`Phát hiện ${data.count} thiết bị trong ${data.inference_time_ms}ms!`, "success");
+            completeAiLoadingAnimation(() => {
+                DOM.resultImage.src = data.annotated_image;
+                DOM.downloadBtn.href = data.annotated_image;
+                
+                updateStats(data.inference_time_ms, data.count, 0);
+                renderDetectionsList(data.detections);
+                showToast(`Phát hiện ${data.count} thiết bị trong ${data.inference_time_ms}ms!`, "success");
+            });
         } else {
-            DOM.resultImage.style.opacity = '1';
+            hideAiLoadingAnimation();
             showToast(`Lỗi nhận diện: ${data.error || 'Thử lại sau'}`, "error");
         }
 
     } catch (err) {
         console.error("Image inference error:", err);
-        DOM.resultImage.style.opacity = '1';
+        hideAiLoadingAnimation();
         showToast("Lỗi kết nối máy chủ nhận diện!", "error");
     }
 }
