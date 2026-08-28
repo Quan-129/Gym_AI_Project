@@ -53,6 +53,11 @@
                     <span id="modelNameDisplay">{{ model_name }}</span>
                     <span class="badge-pill">mAP50 82.8%</span>
                 </div>
+                <button class="badge badge-directory" id="openDirBtn" onclick="openEquipmentModal()" title="Xem toàn bộ 69 loại máy tập được hỗ trợ">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>69 Thiết Bị Gym</span>
+                    <span class="badge-count-pill">Tra cứu</span>
+                </button>
             </div>
         </div>
     </header>
@@ -280,15 +285,63 @@
                     </div>
                 </div>
 
-                <!-- Footer Quick Info -->
-                <div class="card-footer-info">
-                    <span><i class="fa-solid fa-circle-info"></i> Mô hình hỗ trợ 69 loại thiết bị & máy gym</span>
+                <!-- Footer Quick Info (Clickable to open directory) -->
+                <div class="card-footer-info" onclick="openEquipmentModal()" style="cursor: pointer;" title="Nhấn để xem danh sách chi tiết 69 loại máy">
+                    <span><i class="fa-solid fa-circle-info"></i> Mô hình hỗ trợ 69 loại thiết bị & máy gym ➔ <u>Xem danh mục</u></span>
                 </div>
 
             </aside>
 
         </div>
     </main>
+
+    <!-- 69 Gym Equipment Directory Modal -->
+    <div class="equipment-modal-backdrop" id="equipmentModal" style="display: none;" onclick="handleModalBackdropClick(event)">
+        <div class="equipment-modal-dialog">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <div class="modal-title-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                    <div>
+                        <h3>Danh Mục 69 Thiết Bị Gym Hỗ Trợ</h3>
+                        <p>Tra cứu nhanh tên tiếng Anh, chức năng tiếng Việt và nhóm cơ tập luyện của mô hình AI</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeEquipmentModal()" title="Đóng modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Search & Category Filters -->
+            <div class="modal-controls">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="equipmentSearchInput" placeholder="Tìm kiếm nhanh (vd: đẩy ngực, đùi, dumbbell, treadmill, xô lưng...)" oninput="filterEquipmentDirectory()">
+                    <button class="clear-search-btn" id="clearSearchBtn" onclick="clearEquipmentSearch()" style="display: none;">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+                <div class="category-filter-pills" id="categoryPills">
+                    <button class="cat-pill active" onclick="setCategoryFilter('all')">Tất cả (69)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('cardio')">🏃 Cardio (5)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('legs')">🏋️ Chân & Mông (9)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('upper')">💪 Ngực, Vai, Lưng (6)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('arms_core')">🦾 Tay & Bụng (7)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('cables')">⛓️ Cáp & Phụ kiện (8)</button>
+                    <button class="cat-pill" onclick="setCategoryFilter('freeweights')">🥊 Tạ tự do & Khác (13)</button>
+                </div>
+            </div>
+
+            <!-- Grid of Equipment Cards -->
+            <div class="equipment-grid" id="equipmentGrid">
+                <!-- Dynamically rendered via JS -->
+            </div>
+
+            <div class="modal-footer">
+                <span class="footer-info"><i class="fa-solid fa-circle-check text-success"></i> Mô hình YOLOv8s đạt độ chính xác <b>mAP50 = 82.8%</b></span>
+                <button class="btn btn-primary btn-sm" onclick="closeEquipmentModal()">Đóng cửa sổ</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Floating Toast Message Notification -->
     <div id="toast" class="toast"></div>

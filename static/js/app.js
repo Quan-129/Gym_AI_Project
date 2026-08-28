@@ -684,3 +684,194 @@ function renderDetectionsList(detections) {
 
     DOM.detectionsList.innerHTML = html;
 }
+
+// ============================================================
+// 69 GYM EQUIPMENT DIRECTORY & SEARCH
+// ============================================================
+
+const GYM_EQUIPMENT_DATABASE = [
+    // 🏃 Cardio (5)
+    { id: 1, name: "Treadmill", viName: "Máy chạy bộ điện", cat: "cardio", catName: "Cardio", icon: "fa-person-running", desc: "Máy chạy bộ và đi bộ dốc đốt calo, nâng cao thể lực tim mạch." },
+    { id: 2, name: "Stationary Bike", viName: "Xe đạp tập thể lực đứng", cat: "cardio", catName: "Cardio", icon: "fa-bicycle", desc: "Xe đạp tập thể lực cố định, rèn luyện sức bền chân và tim mạch." },
+    { id: 3, name: "Recumbent Bike", viName: "Xe đạp tập có tựa lưng", cat: "cardio", catName: "Cardio", icon: "fa-chair", desc: "Xe đạp có ghế đệm tựa lưng, giảm tải áp lực cột sống và khớp gối." },
+    { id: 4, name: "Elliptical / Cross-trainer", viName: "Máy đi bộ trên không (Elip)", cat: "cardio", catName: "Cardio", icon: "fa-person-walking", desc: "Chuyển động quỹ đạo elip toàn thân, không gây tác động sốc khớp." },
+    { id: 5, name: "Stair Climber", viName: "Máy leo cầu thang", cat: "cardio", catName: "Cardio", icon: "fa-stairs", desc: "Máy bước cầu thang liên tục, kích hoạt cơ đùi và nâng mông hiệu quả." },
+
+    // 🏋️ Chân & Mông (9)
+    { id: 6, name: "Leg Press", viName: "Máy đạp đùi 45°", cat: "legs", catName: "Chân & Mông", icon: "fa-angles-up", desc: "Đạp đùi trước, đùi sau và cơ mông với tải trọng tạ khối lớn an toàn." },
+    { id: 7, name: "Hack Squat Machine", viName: "Máy gánh đùi xiên Hack Squat", cat: "legs", catName: "Chân & Mông", icon: "fa-arrows-down-to-line", desc: "Tập trung lực cô lập cơ đùi trước (Quadriceps) và hạn chế đau lưng dưới." },
+    { id: 8, name: "Squat Rack", viName: "Khung gánh tạ Squat tự do", cat: "legs", catName: "Chân & Mông", icon: "fa-cubes-stacked", desc: "Khung đỡ đòn tạ tiêu chuẩn cho các bài Squat, Overhead Press tự do." },
+    { id: 9, name: "Smith Machine", viName: "Máy gánh tạ ray trượt an toàn", cat: "legs", catName: "Chân & Mông", icon: "fa-grip-vertical", desc: "Đòn tạ trượt theo thanh ray cố định có móc khóa hãm an toàn khi đuối sức." },
+    { id: 10, name: "Leg Extension Machine", viName: "Máy đá đùi trước", cat: "legs", catName: "Chân & Mông", icon: "fa-arrow-trend-up", desc: "Cô lập làm nét cơ tứ đầu đùi (Quadriceps) tạo khối đùi cắt nét rõ ràng." },
+    { id: 11, name: "Leg Curl / Hamstring Curl", viName: "Máy móc đùi sau", cat: "legs", catName: "Chân & Mông", icon: "fa-arrow-trend-down", desc: "Tập trung co gập cơ đùi sau (Hamstrings) ở tư thế nằm hoặc ngồi." },
+    { id: 12, name: "Hip Adduction Machine", viName: "Máy ép & mở đùi", cat: "legs", catName: "Chân & Mông", icon: "fa-arrows-left-right", desc: "Rèn luyện nhóm cơ khép đùi trong và cơ mông nhỡ mở đùi ngoài." },
+    { id: 13, name: "Glute Drive Machine", viName: "Máy đẩy hông tập mông (Hip Thrust)", cat: "legs", catName: "Chân & Mông", icon: "fa-shield-halved", desc: "Máy chuyên dụng tập đẩy hông tăng kích thước và độ săn chắc vòng 3." },
+    { id: 14, name: "Seated Calf Raise Machine", viName: "Máy nhón bắp chân ngồi", cat: "legs", catName: "Chân & Mông", icon: "fa-socks", desc: "Tập trung phát triển cơ bắp chuối và cơ dép cẳng chân dưới." },
+
+    // 💪 Ngực, Vai & Lưng Xô (6)
+    { id: 15, name: "Chest Machine", viName: "Máy đẩy / ép ngực", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-heart-pulse", desc: "Máy tập cơ ngực lớn (Chest Press / Pec Fly) theo quỹ đạo chuẩn xác." },
+    { id: 16, name: "Shoulder Press Machine", viName: "Máy đẩy vai ngồi", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-arrow-up-from-bracket", desc: "Phát triển toàn diện khối cơ vai trước và vai giữa (Deltoids)." },
+    { id: 17, name: "Lateral Raise Machine", viName: "Máy tập cơ vai ngang", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-arrows-left-right-to-line", desc: "Cô lập tạo độ tròn và rộng cho khối cơ vai ngang." },
+    { id: 18, name: "Lat Pull Down Machine", viName: "Máy kéo xô lưng thẳng", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-arrow-down-wide-short", desc: "Kéo cáp từ trên xuống mở rộng độ rộng lưng xô chữ V (Lats)." },
+    { id: 19, name: "Seated Row Machine", viName: "Máy chèo thuyền kéo xô ngồi", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-water-ladder", desc: "Kéo ngang làm dày cơ lưng giữa, cơ trám và cơ thang." },
+    { id: 20, name: "Back Extension Machine", viName: "Máy gập duỗi lưng dưới (Hyperextension)", cat: "upper", catName: "Ngực, Vai, Lưng", icon: "fa-person-falling", desc: "Gập duỗi tăng cường cơ dựng sống lưng dưới (Erector Spinae) và mông." },
+
+    // 🦾 Tay & Cơ Bụng (7)
+    { id: 21, name: "Arm Curl Machine", viName: "Máy cuốn bắp tay trước", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-hand-fist", desc: "Cô lập và bơm căng tối đa cho khối cơ bắp tay trước (Biceps)." },
+    { id: 22, name: "Preacher Curl", viName: "Ghế dốc tập bắp tay trước", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-hand-back-fist", desc: "Tựa tay dốc ngăn đà vung người khi cuốn tạ đòn / tạ đơn bắp tay." },
+    { id: 23, name: "Triceps Extension Machine", viName: "Máy duỗi bắp tay sau", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-hand-point-down", desc: "Tập trung lực kéo duỗi cơ tam đầu bắp tay sau (Triceps)." },
+    { id: 24, name: "Seated Dip Machine", viName: "Máy nhấn xà cơ tay sau", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-arrow-down-up-lock", desc: "Đẩy tải trọng xuống tập cơ tay sau và đường viền rãnh ngực dưới." },
+    { id: 25, name: "Ab Crunch Machine", viName: "Máy gập bụng tạ khối", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-person", desc: "Gập cuộn cơ bụng 6 múi có thêm đối trọng tạ khối tùy chỉnh." },
+    { id: 26, name: "Ab Roller", viName: "Con lăn tập cơ bụng", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-compact-disc", desc: "Lăn đẩy kéo căng toàn bộ cơ bụng trước, cơ lõi và cơ liên sườn." },
+    { id: 27, name: "Leg Raise Tower / Roman Chair", viName: "Tháp xà kép nâng gối & Ghế La Mã", cat: "arms_core", catName: "Tay & Bụng", icon: "fa-bars-staggered", desc: "Treo người nâng gối gập bụng dưới và gập lưng La Mã bảo vệ cột sống." },
+
+    // ⛓️ Khung Cáp & Phụ Kiện (8)
+    { id: 28, name: "Cable Machine / Functional Trainer", viName: "Dàn kéo cáp đa năng", cat: "cables", catName: "Khung Cáp", icon: "fa-link", desc: "Dàn cáp đôi ròng rọc linh hoạt mọi góc kéo tập toàn diện cơ thể." },
+    { id: 29, name: "Multi-Station Home Gym", viName: "Giàn tập tạ khối đa năng", cat: "cables", catName: "Khung Cáp", icon: "fa-building-columns", desc: "Tổ hợp liên hoàn nhiều vị trí tập tích hợp trên cùng một khối máy." },
+    { id: 30, name: "V-Bar Cable Attachment", viName: "Tay nắm kéo cáp chữ V", cat: "cables", catName: "Khung Cáp", icon: "fa-v", desc: "Tay nắm góc nhọn kéo cáp duỗi tay sau (Pushdown) và chèo xô." },
+    { id: 31, name: "Straight Bar Attachment", viName: "Thanh đòn thẳng kéo cáp", cat: "cables", catName: "Khung Cáp", icon: "fa-minus", desc: "Thanh đòn thẳng nối cáp cuốn tay trước, tay sau và kéo xô lưng." },
+    { id: 32, name: "EZ Bar Cable Attachment", viName: "Thanh đòn ziczac kéo cáp", cat: "cables", catName: "Khung Cáp", icon: "fa-wave-square", desc: "Đòn uốn lượn công thái học giảm áp lực cổ tay khi kéo cáp." },
+    { id: 33, name: "Single Cable Rope Attachment", viName: "Dây thừng kéo cáp", cat: "cables", catName: "Khung Cáp", icon: "fa-lines-leaning", desc: "Dây thừng sợi bện tập banh tay sau (Triceps Rope) và gập bụng cáp." },
+    { id: 34, name: "Wide Grip / Close Grip Attachment", viName: "Thanh kéo xô rộng / hẹp", cat: "cables", catName: "Khung Cáp", icon: "fa-arrows-left-right", desc: "Thanh kéo xô dài mở rộng biên độ cơ lưng xô toàn phần." },
+    { id: 35, name: "Mag Cable Attachment", viName: "Tay cầm xô công thái học MAG", cat: "cables", catName: "Khung Cáp", icon: "fa-magnet", desc: "Tay cầm bọc cao su chống trượt tối ưu cảm nhận cơ lưng xô." },
+
+    // 🥊 Tạ Tự Do & Phụ Kiện (13)
+    { id: 36, name: "Dumbbell", viName: "Tạ đơn (Tạ tay)", cat: "freeweights", catName: "Tạ tự do", icon: "fa-dumbbell", desc: "Tạ tay rời các mức cân nặng từ 1kg đến 50kg cho các bài cô lập." },
+    { id: 37, name: "Barbell", viName: "Tạ đòn dài Olympic", cat: "freeweights", catName: "Tạ tự do", icon: "fa-weight-hanging", desc: "Thanh đòn dài 2.2m tiêu chuẩn dùng trong Bench Press, Deadlift, Squat." },
+    { id: 38, name: "Kettlebell", viName: "Tạ bình vôi (Tạ chuông)", cat: "freeweights", catName: "Tạ tự do", icon: "fa-bell", desc: "Tạ quai cầm chuyên dùng cho bài Swing, Snatch tăng sức bền bùng nổ." },
+    { id: 39, name: "Plates", viName: "Bánh tạ đĩa gang / cao su", cat: "freeweights", catName: "Tạ tự do", icon: "fa-circle-dot", desc: "Các bánh tạ tròn 2.5kg, 5kg, 10kg, 20kg lắp vào thanh đòn tạ." },
+    { id: 40, name: "Bench", viName: "Ghế tập tạ đa năng", cat: "freeweights", catName: "Tạ tự do", icon: "fa-tablets", desc: "Ghế nằm phẳng (Flat), dốc lên (Incline), dốc xuống (Decline)." },
+    { id: 41, name: "Pull Up Bar / Parallel Bars", viName: "Xà đơn & Xà kép", cat: "freeweights", catName: "Tạ tự do", icon: "fa-bars", desc: "Khung tập kéo xà, hít xà kép bằng trọng lượng cơ thể (Calisthenics)." },
+    { id: 42, name: "Assisted Pull Up and Dip", viName: "Máy trợ lực kéo xà đơn & kép", cat: "freeweights", catName: "Tạ tự do", icon: "fa-elevator", desc: "Bàn nâng đối trọng trợ lực cho người mới tập hít xà đơn và xà kép." },
+    { id: 43, name: "Punching Bag", viName: "Bao cát đấm bốc (Boxing)", cat: "freeweights", catName: "Tạ tự do", icon: "fa-mitten", desc: "Bao cát treo tập đấm đá võ thuật, tăng tốc độ phản xạ và xả stress." },
+    { id: 44, name: "Resistance Bands", viName: "Dây thun kháng lực cao su", cat: "freeweights", catName: "Tạ tự do", icon: "fa-infinity", desc: "Dây cao su tạo lực cản động linh hoạt khởi động và tập bổ trợ." },
+    { id: 45, name: "Plyometric Box", viName: "Hộp gỗ nhảy thể lực", cat: "freeweights", catName: "Tạ tự do", icon: "fa-cube", desc: "Bục gỗ tập bật nhảy (Box Jump) tăng sức bật và độ bùng nổ cơ chân." },
+    { id: 46, name: "Ball", viName: "Bóng tập thể lực / Bóng Yoga", cat: "freeweights", catName: "Tạ tự do", icon: "fa-volleyball", desc: "Bóng thăng bằng Gym Ball và bóng nhồi lực ném Slam Ball." },
+    { id: 47, name: "Push Up Equipment", viName: "Dụng cụ hỗ trợ chống đẩy", cat: "freeweights", catName: "Tạ tự do", icon: "fa-grip-lines", desc: "Tay cầm hít đất xoay bảo vệ cổ tay và tăng biên độ ép ngực." },
+    { id: 48, name: "Foam Equipment", viName: "Con lăn giãn cơ Foam Roller", cat: "freeweights", catName: "Tạ tự do", icon: "fa-scroll", desc: "Ống lăn massage giải phóng các điểm căng cơ bắp sau buổi tập." }
+];
+
+let currentCategoryFilter = 'all';
+
+function openEquipmentModal() {
+    const modal = document.getElementById('equipmentModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        filterEquipmentDirectory();
+        
+        // Focus search input
+        const searchInput = document.getElementById('equipmentSearchInput');
+        if (searchInput) {
+            setTimeout(() => searchInput.focus(), 150);
+        }
+    }
+}
+
+function closeEquipmentModal() {
+    const modal = document.getElementById('equipmentModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+function handleModalBackdropClick(event) {
+    if (event.target.id === 'equipmentModal') {
+        closeEquipmentModal();
+    }
+}
+
+function setCategoryFilter(category) {
+    currentCategoryFilter = category;
+    
+    // Update active pill button UI
+    const pills = document.querySelectorAll('.cat-pill');
+    pills.forEach(pill => {
+        if (pill.getAttribute('onclick') && pill.getAttribute('onclick').includes(`'${category}'`)) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+
+    filterEquipmentDirectory();
+}
+
+function clearEquipmentSearch() {
+    const searchInput = document.getElementById('equipmentSearchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    if (searchInput) {
+        searchInput.value = '';
+        if (clearBtn) clearBtn.style.display = 'none';
+        filterEquipmentDirectory();
+        searchInput.focus();
+    }
+}
+
+function filterEquipmentDirectory() {
+    const searchInput = document.getElementById('equipmentSearchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+
+    if (clearBtn) {
+        clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+    }
+
+    const filtered = GYM_EQUIPMENT_DATABASE.filter(item => {
+        const matchCategory = currentCategoryFilter === 'all' || item.cat === currentCategoryFilter;
+        const matchQuery = !query || 
+            item.name.toLowerCase().includes(query) || 
+            item.viName.toLowerCase().includes(query) || 
+            item.desc.toLowerCase().includes(query) ||
+            item.catName.toLowerCase().includes(query);
+            
+        return matchCategory && matchQuery;
+    });
+
+    renderEquipmentGrid(filtered);
+}
+
+function renderEquipmentGrid(items) {
+    const grid = document.getElementById('equipmentGrid');
+    if (!grid) return;
+
+    if (!items || items.length === 0) {
+        grid.innerHTML = `
+            <div class="no-equipment-match">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>Không tìm thấy thiết bị nào phù hợp với từ khóa.</p>
+                <small>Hãy thử tìm bằng từ khóa khác như "ngực", "tạ", "cáp", "đùi"...</small>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    items.forEach(item => {
+        html += `
+            <div class="equipment-card">
+                <div class="equipment-icon-box">
+                    <i class="fa-solid ${item.icon}"></i>
+                </div>
+                <div class="equipment-meta">
+                    <div class="card-top-row">
+                        <span class="eng-name" title="${item.name}">${item.name}</span>
+                        <span class="cat-badge">${item.catName}</span>
+                    </div>
+                    <div class="vi-name">${item.viName}</div>
+                    <p class="desc-text">${item.desc}</p>
+                </div>
+            </div>
+        `;
+    });
+
+    grid.innerHTML = html;
+}
+
+// Global Keyboard listener: Close modal on Esc
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeEquipmentModal();
+    }
+});
