@@ -342,7 +342,17 @@ body {
     box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
 }
 
-.viewfinder-wrapper video,
+.viewfinder-wrapper video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    background: #000;
+}
+
 .viewfinder-wrapper canvas {
     position: absolute;
     top: 0;
@@ -350,10 +360,8 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-
-#webcamElement {
-    display: none; /* Video is rendered through canvas with AI bounding boxes */
+    z-index: 2;
+    pointer-events: none;
 }
 
 /* Standby Placeholder */

@@ -230,10 +230,10 @@ function renderLocalVideoLoop() {
             DOM.canvas.height = vh;
         }
 
-        // 1. Draw smooth 60 FPS camera video directly on canvas
-        ctx.drawImage(DOM.webcam, 0, 0, DOM.canvas.width, DOM.canvas.height);
+        // Clear previous bounding box overlay
+        ctx.clearRect(0, 0, DOM.canvas.width, DOM.canvas.height);
 
-        // 2. Draw active bounding boxes and cyberpunk glow tags on top
+        // Draw active bounding boxes and cyberpunk glow tags on top
         drawDetectionsOnCanvas(ctx, state.lastDetections, DOM.canvas.width, DOM.canvas.height);
         
         state.renderFrameCount = (state.renderFrameCount || 0) + 1;
